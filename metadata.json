@@ -1,6 +1,6 @@
 {
-  "name": "Aero Piston Engine Digital Twin System | MALE UAV",
-  "description": "AI-Enabled Real-Time Digital Twin System for Health Monitoring, Fault Prediction and Mission Reliability Enhancement of Aero Piston Engines used in MALE UAVs (TAPAS-BH-201)",
+  "name": "Aerospace Engine Health Monitoring Dashboard",
+  "description": "Real-time aerospace engine health monitoring dashboard with 3D digital twin simulation, circular telemetry instrumentation gauges, degradation prognostic indicators, and mission profile tracking.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

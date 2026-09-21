@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  AlertMessage,
   FaultType,
-  MissionPhase,
-  OperatingControls as OperatingControlsType,
+  OperatingControls,
   TelemetryData,
+  MissionPhase,
+  AlertMessage,
 } from './types/engine';
 import { simulateAeroPistonTelemetry } from './services/physicsEngine';
 import {
@@ -14,105 +14,67 @@ import {
   evaluateAiDiagnostics,
   computeRulEstimate,
 } from './services/digitalTwinModel';
-import {
-  MISSION_PHASES,
-  DEMO_STEPS,
-  MissionReplayPoint,
-} from './services/missionService';
-
-import { TopBar } from './components/TopBar';
-import { Engine3DView } from './components/Engine3DView';
-import { EngineHealthPanel } from './components/EngineHealthPanel';
-import { TelemetryCharts } from './components/TelemetryCharts';
-import { OperatingControls } from './components/OperatingControls';
-import { FaultInjectionPanel } from './components/FaultInjectionPanel';
+import { AerospaceTopNav } from './components/AerospaceTopNav';
+import { AerospaceGaugesRow } from './components/AerospaceGaugesRow';
+import { AerospaceHealthPanel } from './components/AerospaceHealthPanel';
+import { AerospaceSimulationHero } from './components/AerospaceSimulationHero';
+import { AerospaceMultiTraceChart } from './components/AerospaceMultiTraceChart';
+import { AerospaceRightPanel } from './components/AerospaceRightPanel';
+import { AerospaceBottomBar } from './components/AerospaceBottomBar';
 import { DigitalTwinComparison } from './components/DigitalTwinComparison';
-import { AiDiagnosticsPanel } from './components/AiDiagnosticsPanel';
-import { MissionSimulationPanel } from './components/MissionSimulationPanel';
-import { MissionReplayTimeline } from './components/MissionReplayTimeline';
 import { WhatIfSimulation } from './components/WhatIfSimulation';
-import { AlertBannerAndLogs } from './components/AlertBannerAndLogs';
-import { DemoController } from './components/DemoController';
+import { ChevronDown, ChevronUp, Layers, HelpCircle } from 'lucide-react';
 
-export default function App() {
-  // Theme state: default to 'light' (Tactical Daylight Mode)
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('drdo_theme');
-    return saved === 'dark' ? 'dark' : 'light';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('drdo_theme', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
-
-  // Operating controls state (nominal cruise initial state)
-  const [controls, setControls] = useState<OperatingControlsType>({
+export function App() {
+  // Flight Operating Controls (Baseline Cruise at FL140)
+  const [controls, setControls] = useState<OperatingControls>({
     throttle: 68,
     altitude: 14000,
     ambientTemp: 5,
     engineLoad: 70,
   });
 
-  // Injected fault state
+  // Active Fault State
   const [activeFault, setActiveFault] = useState<FaultType>('NORMAL');
-  const [faultSeverity, setFaultSeverity] = useState<number>(0.85);
+  const [faultSeverity, setFaultSeverity] = useState<number>(0);
 
-  // Mission profile phase
+  // Active Mission Phase
   const [currentMissionPhase, setCurrentMissionPhase] = useState<MissionPhase>('CRUISE');
 
-  // Flight Data Recorder (FDR) / Live mode toggle
-  const [isLiveMode, setIsLiveMode] = useState<boolean>(true);
+  // Drawer / Secondary Analysis toggle
+  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState<boolean>(false);
 
-  // Telemetry real-time buffer
+  // Real-Time Telemetry State
   const [latestTelemetry, setLatestTelemetry] = useState<TelemetryData>(() =>
     simulateAeroPistonTelemetry(
       { throttle: 68, altitude: 14000, ambientTemp: 5, engineLoad: 70 },
       'NORMAL',
-      1,
+      0,
       0
     )
   );
   const [telemetryHistory, setTelemetryHistory] = useState<TelemetryData[]>([]);
 
-  // Selected sensor for cross-highlighting
-  const [selectedSensorId, setSelectedSensorId] = useState<string | null>(null);
-
-  // Alerts list
+  // Alerts List with Soft Pastel Notification Banners
   const [alerts, setAlerts] = useState<AlertMessage[]>([
     {
       id: 'al-init',
       timestamp: '12:00:00',
       level: 'NORMAL',
       subsystem: 'THERMAL',
-      message: 'Engine operating within expected envelope.',
-      actionRequired: 'Continue nominal mission loiter profile.',
+      message: 'Propulsion system operating within certified flight envelope.',
+      actionRequired: 'Maintain nominal cruise profile.',
     },
   ]);
 
-  // Demo Mode state
-  const [isDemoActive, setIsDemoActive] = useState<boolean>(false);
-  const [demoStepIndex, setDemoStepIndex] = useState<number>(0);
-  const [isDemoPlaying, setIsDemoPlaying] = useState<boolean>(true);
+  const elapsedSecondsRef = useRef<number>(1420);
 
-  const elapsedSecondsRef = useRef<number>(0);
-
-  // --- Real-Time Telemetry Physics Loop (500ms update rate for stable smooth rendering) ---
+  // Real-Time Telemetry Loop (300ms update rate for fluid gauges and waveforms)
   useEffect(() => {
     const interval = setInterval(() => {
       elapsedSecondsRef.current += 0.5;
-
       const currentSec = elapsedSecondsRef.current;
+
       const newTelemetry = simulateAeroPistonTelemetry(
         controls,
         activeFault,
@@ -124,17 +86,17 @@ export default function App() {
 
       setTelemetryHistory((prev) => {
         const next = [...prev, newTelemetry];
-        if (next.length > 45) {
-          return next.slice(next.length - 45);
+        if (next.length > 50) {
+          return next.slice(next.length - 50);
         }
         return next;
       });
-    }, 500);
+    }, 400);
 
     return () => clearInterval(interval);
   }, [controls, activeFault, faultSeverity]);
 
-  // --- Digital Twin Computations ---
+  // Digital Twin Computations
   const expectedValues = computeExpectedValues(controls);
   const { items: comparisonItems, anomalyScore } = computeResidualComparison(
     latestTelemetry,
@@ -148,7 +110,7 @@ export default function App() {
     aiDiagnostics.probableFault
   );
 
-  // --- Automatic Alert Triggering on Subsystem Deviation ---
+  // Dynamic Alert Generation when fault changes
   const lastLoggedFaultRef = useRef<string>('NORMAL');
   useEffect(() => {
     if (activeFault !== lastLoggedFaultRef.current) {
@@ -162,10 +124,10 @@ export default function App() {
             timestamp: now,
             level: 'NORMAL',
             subsystem: 'THERMAL',
-            message: 'Engine operating within expected envelope.',
-            actionRequired: 'Maintain cruise altitude and continuous CAN telemetry surveillance.',
+            message: 'All engine channels restored to nominal operating parameters.',
+            actionRequired: 'Telemetry surveillance active.',
           },
-          ...prev.slice(0, 19),
+          ...prev.slice(0, 9),
         ]);
       } else if (activeFault === 'INJECTOR_DEGRADATION') {
         setAlerts((prev) => [
@@ -174,22 +136,10 @@ export default function App() {
             timestamp: now,
             level: 'WARNING',
             subsystem: 'COMBUSTION',
-            message: 'Emerging thermal degradation detected. EGT residual +45°C on Cylinder #2.',
-            actionRequired: 'Throttle back to 60%, prepare diversion to alternate recovery strip.',
+            message: 'Fuel injector partial restriction detected on Cylinder #2. EGT residual +42°C.',
+            actionRequired: 'Reduce cruise throttle to 60%; monitor cylinder balance.',
           },
-          ...prev.slice(0, 19),
-        ]);
-      } else if (activeFault === 'LUBRICATION_FAILURE') {
-        setAlerts((prev) => [
-          {
-            id: `al-${Date.now()}`,
-            timestamp: now,
-            level: 'CRITICAL',
-            subsystem: 'LUBRICATION',
-            message: 'Severe lubrication degradation detected. Recovery/maintenance advisory.',
-            actionRequired: 'CRITICAL: Bearing boundary seizure risk. Initiate emergency descent immediately.',
-          },
-          ...prev.slice(0, 19),
+          ...prev.slice(0, 9),
         ]);
       } else if (activeFault === 'OVERHEATING') {
         setAlerts((prev) => [
@@ -198,22 +148,22 @@ export default function App() {
             timestamp: now,
             level: 'CRITICAL',
             subsystem: 'THERMAL',
-            message: 'Cylinder head temperature exceedance (> 210°C). Thermal runaway boundary.',
-            actionRequired: 'Enrich mixture, open cowl flaps, step down throttle to 45%.',
+            message: 'Cylinder head temperature exceedance (> 185°C). Cooling jacket heat rejection compromised.',
+            actionRequired: 'Immediate throttle step-down; enrich mixture to avoid thermal detonation.',
           },
-          ...prev.slice(0, 19),
+          ...prev.slice(0, 9),
         ]);
-      } else if (activeFault === 'SENSOR_DRIFT') {
+      } else if (activeFault === 'LUBRICATION_FAILURE') {
         setAlerts((prev) => [
           {
             id: `al-${Date.now()}`,
             timestamp: now,
-            level: 'WARNING',
-            subsystem: 'SENSOR',
-            message: 'Sensor Telemetry Drift: CHT Thermocouple decoupled from coupled thermal channels.',
-            actionRequired: 'AI Isolated Sensor Failure: Do not command engine shutdown; flag avionics bay.',
+            level: 'CRITICAL',
+            subsystem: 'LUBRICATION',
+            message: 'Main oil gallery pressure collapse (< 2.0 bar). Severe hydrodynamic bearing risk.',
+            actionRequired: 'Prepare descent vector; land at nearest diversion airstrip.',
           },
-          ...prev.slice(0, 19),
+          ...prev.slice(0, 9),
         ]);
       } else {
         setAlerts((prev) => [
@@ -222,296 +172,179 @@ export default function App() {
             timestamp: now,
             level: 'WARNING',
             subsystem: 'MECHANICAL',
-            message: `Fault signature active: ${activeFault.replace(/_/g, ' ')}.`,
-            actionRequired: 'Monitor harmonic vibration trends and verify flight envelope safety.',
+            message: `Telemetry anomaly detected: ${activeFault.replace(/_/g, ' ')}.`,
+            actionRequired: 'Verify airframe vibration dampers and TCU actuators.',
           },
-          ...prev.slice(0, 19),
+          ...prev.slice(0, 9),
         ]);
       }
     }
   }, [activeFault]);
 
-  // Current Headline for the Alert Banner
-  const currentAlertHeadline =
-    aiDiagnostics.status === 'CRITICAL'
-      ? activeFault === 'LUBRICATION_FAILURE'
-        ? 'Severe lubrication degradation detected. Recovery/maintenance advisory.'
-        : 'Critical propulsion threshold exceedance! Immediate recovery advisory active.'
-      : aiDiagnostics.status === 'WARNING'
-      ? activeFault === 'INJECTOR_DEGRADATION'
-        ? 'Emerging thermal degradation detected.'
-        : `Diagnostic advisory: ${aiDiagnostics.probableFault}.`
-      : 'Engine operating within expected envelope.';
-
-  // --- Mission Phase Selection Handler ---
-  const handleSelectMissionPhase = (phase: MissionPhase) => {
+  // Mission Phase selector handler
+  const handleMissionPhaseSelect = (phase: MissionPhase) => {
     setCurrentMissionPhase(phase);
-    const cfg = MISSION_PHASES[phase];
-    setControls((prev) => ({
-      ...prev,
-      altitude: cfg.altitude,
-      throttle: cfg.throttle,
-      engineLoad: cfg.engineLoad,
-    }));
+    switch (phase) {
+      case 'TAKEOFF':
+        setControls({ throttle: 100, altitude: 500, ambientTemp: 26, engineLoad: 100 });
+        break;
+      case 'CLIMB':
+        setControls({ throttle: 88, altitude: 8000, ambientTemp: 14, engineLoad: 88 });
+        break;
+      case 'CRUISE':
+        setControls({ throttle: 68, altitude: 14000, ambientTemp: 5, engineLoad: 70 });
+        break;
+      case 'HIGH_ALTITUDE_LOITER':
+        setControls({ throttle: 78, altitude: 22000, ambientTemp: -18, engineLoad: 80 });
+        break;
+      case 'DESCENT':
+      case 'LANDING':
+        setControls({ throttle: 35, altitude: 2000, ambientTemp: 24, engineLoad: 38 });
+        break;
+    }
   };
 
-  // --- Flight Data Recorder (FDR) Replay Handler ---
-  const handleReplayPointSelect = useCallback((point: MissionReplayPoint) => {
-    setControls(point.controls);
-    setActiveFault(point.fault);
-    setFaultSeverity(point.faultSeverity || 0.8);
-  }, []);
-
-  // --- Demo Mode Progression Controller ---
-  const applyDemoStep = useCallback((stepIdx: number) => {
-    const step = DEMO_STEPS[stepIdx];
-    if (!step) return;
-
-    if (step.step === 1) {
-      setControls({ throttle: 68, altitude: 14000, ambientTemp: 5, engineLoad: 70 });
+  // Preset handler
+  const handlePresetSelect = (preset: 'nominal' | 'injector' | 'cooling' | 'oil' | 'altitude') => {
+    if (preset === 'nominal') {
       setActiveFault('NORMAL');
       setFaultSeverity(0);
-    } else if (step.step === 2) {
+      setControls({ throttle: 68, altitude: 14000, ambientTemp: 5, engineLoad: 70 });
+      setCurrentMissionPhase('CRUISE');
+    } else if (preset === 'altitude') {
+      setActiveFault('NORMAL');
+      setFaultSeverity(0);
+      setControls({ throttle: 80, altitude: 22000, ambientTemp: -18, engineLoad: 82 });
+      setCurrentMissionPhase('HIGH_ALTITUDE_LOITER');
+    } else if (preset === 'injector') {
       setActiveFault('INJECTOR_DEGRADATION');
-      setFaultSeverity(0.35);
-    } else if (step.step === 3) {
-      setActiveFault('INJECTOR_DEGRADATION');
-      setFaultSeverity(0.60);
-    } else if (step.step === 4) {
-      setActiveFault('INJECTOR_DEGRADATION');
-      setFaultSeverity(0.75);
-    } else if (step.step === 5) {
-      setActiveFault('INJECTOR_DEGRADATION');
+      setFaultSeverity(0.85);
+      setControls({ throttle: 72, altitude: 14000, ambientTemp: 5, engineLoad: 75 });
+    } else if (preset === 'cooling') {
+      setActiveFault('OVERHEATING');
+      setFaultSeverity(0.9);
+      setControls({ throttle: 90, altitude: 8000, ambientTemp: 32, engineLoad: 92 });
+      setCurrentMissionPhase('CLIMB');
+    } else if (preset === 'oil') {
+      setActiveFault('LUBRICATION_FAILURE');
       setFaultSeverity(0.88);
-    } else if (step.step === 6) {
-      setActiveFault('INJECTOR_DEGRADATION');
-      setFaultSeverity(0.92);
-    } else if (step.step === 7) {
-      setActiveFault('INJECTOR_DEGRADATION');
-      setFaultSeverity(0.96);
-    } else if (step.step === 8) {
-      setActiveFault('INJECTOR_DEGRADATION');
-      setFaultSeverity(1.0);
-    }
-  }, []);
-
-  // Demo auto-advance timer (5 seconds per phase for optimal evaluation pace)
-  useEffect(() => {
-    if (!isDemoActive || !isDemoPlaying) return;
-
-    const timer = setInterval(() => {
-      setDemoStepIndex((prev) => {
-        if (prev < DEMO_STEPS.length - 1) {
-          const next = prev + 1;
-          applyDemoStep(next);
-          return next;
-        } else {
-          // Loop back or hold at maintenance advisory
-          return prev;
-        }
-      });
-    }, 5500);
-
-    return () => clearInterval(timer);
-  }, [isDemoActive, isDemoPlaying, applyDemoStep]);
-
-  const startDemo = () => {
-    setIsDemoActive(true);
-    setDemoStepIndex(0);
-    setIsDemoPlaying(true);
-    applyDemoStep(0);
-  };
-
-  const stopDemo = () => {
-    setIsDemoActive(false);
-  };
-
-  const handleDemoNext = () => {
-    if (demoStepIndex < DEMO_STEPS.length - 1) {
-      const next = demoStepIndex + 1;
-      setDemoStepIndex(next);
-      applyDemoStep(next);
+      setControls({ throttle: 65, altitude: 12000, ambientTemp: 10, engineLoad: 68 });
     }
   };
 
-  const handleDemoPrev = () => {
-    if (demoStepIndex > 0) {
-      const prev = demoStepIndex - 1;
-      setDemoStepIndex(prev);
-      applyDemoStep(prev);
-    }
-  };
-
-  const handleDemoJump = (idx: number) => {
-    setDemoStepIndex(idx);
-    applyDemoStep(idx);
-  };
-
-  // Reset simulation to baseline cruise
+  // Reset handler
   const handleResetSimulation = () => {
-    setIsDemoActive(false);
     setActiveFault('NORMAL');
-    setFaultSeverity(0.85);
-    setControls({
-      throttle: 68,
-      altitude: 14000,
-      ambientTemp: 5,
-      engineLoad: 70,
-    });
+    setFaultSeverity(0);
+    setControls({ throttle: 68, altitude: 14000, ambientTemp: 5, engineLoad: 70 });
     setCurrentMissionPhase('CRUISE');
-    setIsLiveMode(true);
   };
 
   return (
-    <div
-      className={`min-h-screen flex flex-col font-sans transition-colors ${
-        theme === 'light'
-          ? 'bg-[#f1f5f9] text-[#020617]'
-          : 'bg-[#060a12] text-slate-100'
-      }`}
-    >
-      {/* 1. Aerospace GCS Top Bar with Light/Dark Mode Switcher */}
-      <TopBar
-        onStartDemo={startDemo}
-        isDemoRunning={isDemoActive}
-        demoStep={demoStepIndex + 1}
-        totalDemoSteps={DEMO_STEPS.length}
-        onResetSimulation={handleResetSimulation}
-        connectionStatus={isLiveMode ? 'LIVE' : 'STANDBY'}
+    <div className="min-h-screen bg-[#f5f7fa] text-slate-800 flex flex-col font-sans antialiased">
+      {/* 1. Top Navigation Bar: White background, subtle border, green/amber/red status pills */}
+      <AerospaceTopNav
         overallHealth={healthScores.overall}
         anomalyScore={anomalyScore}
-        theme={theme}
-        onToggleTheme={toggleTheme}
+        activeFault={activeFault}
+        criticalAlertCount={alerts.filter((a) => a.level === 'CRITICAL').length}
+        warningAlertCount={alerts.filter((a) => a.level === 'WARNING').length}
+        onResetSimulation={handleResetSimulation}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 p-3 sm:p-4 max-w-[1720px] mx-auto w-full flex flex-col space-y-3.5">
-        {/* Active Demo Mode Controller Stepper Banner (when demo activated) */}
-        {isDemoActive && (
-          <DemoController
-            currentStepIndex={demoStepIndex}
-            isPlaying={isDemoPlaying}
-            onTogglePlay={() => setIsDemoPlaying(!isDemoPlaying)}
-            onNextStep={handleDemoNext}
-            onPrevStep={handleDemoPrev}
-            onStopDemo={stopDemo}
-            onJumpToStep={handleDemoJump}
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-[1920px] mx-auto w-full p-3 sm:p-4 md:p-5 flex flex-col space-y-4">
+        {/* 2. Top Row: Six Circular Real-Time Gauges with Sparkline Graphs */}
+        <section aria-label="Engine Instrumentation Gauges">
+          <AerospaceGaugesRow
+            telemetry={latestTelemetry}
+            history={telemetryHistory}
           />
-        )}
+        </section>
 
-        {/* 13. Alert System Banner & Expandable Log Drawer */}
-        <AlertBannerAndLogs
-          currentLevel={aiDiagnostics.status}
-          currentHeadline={currentAlertHeadline}
-          alerts={alerts}
-          onAcknowledgeAlerts={() => setAlerts([])}
-        />
-
-        {/* Primary Dual-Column GCS Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-          {/* LEFT SIDE: 3D Digital Twin + Residual Comparison + AI Diagnostics */}
-          <div className="lg:col-span-6 flex flex-col space-y-3.5">
-            {/* 2. 3D Digital Twin Viewport (TAPAS-BH-201 MALE UAV twin-boom propulsion) */}
-            <div className="h-[480px] sm:h-[520px]">
-              <Engine3DView
-                telemetry={latestTelemetry}
-                activeFault={activeFault}
-                selectedSensor={selectedSensorId}
-                onSelectSensor={(id) => setSelectedSensorId(id)}
-                theme={theme}
-              />
-            </div>
-
-            {/* 7. Digital Twin Expected vs Actual Comparison Panel */}
-            <DigitalTwinComparison
-              items={comparisonItems}
+        {/* 3. Main 3-Column Dashboard Layout */}
+        <section aria-label="Core Telemetry and Simulation Matrix" className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          {/* LEFT PANEL (col-span-3): Vertical health index bar chart with horizontal progress bars */}
+          <aside className="lg:col-span-3 w-full">
+            <AerospaceHealthPanel
+              health={healthScores}
               anomalyScore={anomalyScore}
             />
+          </aside>
 
-            {/* 8 & 9. AI Diagnostics Module ("AI/ML PROTOTYPE") & RUL Panel */}
-            <AiDiagnosticsPanel
-              diagnostic={aiDiagnostics}
-              rul={rulEstimate}
+          {/* CENTER PANEL (col-span-6): 3D Simulation as MAIN CHARACTER + Prominent Multi-Trace Line Chart */}
+          <section className="lg:col-span-6 w-full flex flex-col space-y-4">
+            {/* HERO: The 3D Engine Digital Twin Simulation */}
+            <AerospaceSimulationHero
+              telemetry={latestTelemetry}
+              activeFault={activeFault}
+              faultSeverity={faultSeverity}
+              controls={controls}
+              onControlsChange={setControls}
+              onFaultChange={(fault, sev) => {
+                setActiveFault(fault);
+                setFaultSeverity(sev);
+              }}
+              onSelectPreset={handlePresetSelect}
+              onReset={handleResetSimulation}
+              theme="light"
             />
-          </div>
 
-          {/* RIGHT SIDE: Health Metrics + Real-Time Telemetry Charts + Operating Controls + Fault Injection */}
-          <div className="lg:col-span-6 flex flex-col space-y-3.5">
-            {/* 3. Engine Health Panel (Overall Health + 5 Subsystems) */}
-            <EngineHealthPanel health={healthScores} />
-
-            {/* 4. Real-Time Telemetry Stream Graphs (Recharts) */}
-            <TelemetryCharts
+            {/* PROMINENT TIME-SERIES LINE CHART with multiple sensor traces and vertical cursor */}
+            <AerospaceMultiTraceChart
               history={telemetryHistory}
               latest={latestTelemetry}
-              selectedChannel={selectedSensorId}
-              onSelectChannel={(ch) => setSelectedSensorId(ch)}
             />
+          </section>
 
-            {/* 5. Engine Operating Controls (Sliders: Throttle, Altitude, Temp, Load) */}
-            <OperatingControls
-              controls={controls}
-              onChange={setControls}
-              disabled={isDemoActive}
+          {/* RIGHT PANEL (col-span-3): RUL countdown display in navy numerals, mission phase pills, soft pastel alerts */}
+          <aside className="lg:col-span-3 w-full">
+            <AerospaceRightPanel
+              rul={rulEstimate}
+              currentPhase={currentMissionPhase}
+              onSelectPhase={handleMissionPhaseSelect}
+              alerts={alerts}
+              onAcknowledgeAlerts={() => setAlerts([])}
             />
+          </aside>
+        </section>
 
-            {/* 6. Fault Injection Panel (Normal, Injector, Misfire, Lub, Overheating, Vib, Drift) */}
-            <FaultInjectionPanel
-              activeFault={activeFault}
-              onSelectFault={setActiveFault}
-              faultSeverity={faultSeverity}
-              onSeverityChange={setFaultSeverity}
-              disabled={isDemoActive}
-            />
-          </div>
-        </div>
+        {/* Optional Deep Engineering Inspection Drawer (Kalman Residuals & What-If Mission Envelope) */}
+        <section className="bg-white rounded-xl border border-[#e5e9f0] p-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+          <button
+            onClick={() => setShowAdvancedAnalytics(!showAdvancedAnalytics)}
+            className="w-full flex items-center justify-between text-left text-xs font-bold text-[#1a3a5c] uppercase tracking-wider"
+          >
+            <div className="flex items-center space-x-2">
+              <Layers className="w-4 h-4 text-[#00897b]" />
+              <span>ADVANCED KALMAN STATE COMPARISON & WHAT-IF MISSION PLANNER</span>
+              <span className="text-[10px] font-normal text-slate-500 normal-case">
+                (Expand for full tolerance residual tables and flight envelope modeling)
+              </span>
+            </div>
+            {showAdvancedAnalytics ? (
+              <ChevronUp className="w-4 h-4 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-slate-400" />
+            )}
+          </button>
 
-        {/* LOWER ADVANCED MISSION SECTION: Mission Profiles, What-If Planner & FDR Replay */}
-        <div className="space-y-3.5 pt-1">
-          {/* 10. Mission Simulation (Takeoff, Climb, Cruise, Loiter, etc.) */}
-          <MissionSimulationPanel
-            currentPhase={currentMissionPhase}
-            onSelectPhase={handleSelectMissionPhase}
-            currentAltitude={controls.altitude}
-            currentThrottle={controls.throttle}
-            currentEngineLoad={controls.engineLoad}
-            currentFuelFlow={latestTelemetry.fuelFlow}
-            engineHealth={healthScores.overall}
-            fuelRemainingKg={latestTelemetry.fuelRemainingKg}
-            disabled={isDemoActive}
-          />
-
-          {/* 12. What-If Simulation Scenario Planner */}
-          <WhatIfSimulation currentHealth={healthScores.overall} />
-
-          {/* 11. Mission Replay Timeline (FDR 00:00 to 60:00) */}
-          <MissionReplayTimeline
-            onReplayPointSelect={handleReplayPointSelect}
-            isLiveMode={isLiveMode}
-            onToggleLiveMode={() => setIsLiveMode(!isLiveMode)}
-          />
-        </div>
-
-        {/* Footer Technical Metadata & Aerospace Proof-of-Concept Notice */}
-        <footer
-          className={`w-full pt-4 pb-3 text-[10px] font-tech border-t flex flex-wrap items-center justify-between gap-2 select-none uppercase tracking-wider ${
-            theme === 'light'
-              ? 'border-[#cbd5e1] text-slate-700'
-              : 'border-[#18263a] text-slate-400'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            <span className="text-cyan-700 dark:text-cyan-400 font-bold font-chakra text-xs tracking-widest">
-              [DRDO-ADE / SIH 2026]
-            </span>
-            <span className="text-slate-400 dark:text-slate-600">|</span>
-            <span className="font-chakra">TAPAS-BH-201 MALE UAV DIGITAL TWIN // LEVEL-4 PROGNOSTICS</span>
-          </div>
-          <div className="font-chakra font-medium">
-            AERONAUTICAL DEVELOPMENT ESTABLISHMENT • DEFENCE RESEARCH & DEVELOPMENT ORGANISATION • TACTICAL GCS BENCH
-          </div>
-        </footer>
+          {showAdvancedAnalytics && (
+            <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <DigitalTwinComparison
+                items={comparisonItems}
+                anomalyScore={anomalyScore}
+              />
+              <WhatIfSimulation currentHealth={healthScores.overall} />
+            </div>
+          )}
+        </section>
       </main>
+
+      {/* 4. Bottom Strip: Compact white status bar with circular dots and digital clock */}
+      <AerospaceBottomBar elapsedSeconds={1420} />
     </div>
   );
 }
+
+export default App;

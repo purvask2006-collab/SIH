@@ -1037,40 +1037,40 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
   ];
 
   return (
-    <div className="w-full h-full flex flex-col bg-white dark:bg-[#070e1b] rounded border border-slate-300 dark:border-[#1c2e47] relative overflow-hidden drdo-card">
-      {/* 3D Viewport Header with SIH DRDO MALE UAV Spec Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-slate-200 dark:border-[#19273c] bg-slate-50 dark:bg-[#091322] z-10">
+    <div className="w-full h-full flex flex-col bg-white rounded-xl border border-[#e5e9f0] relative overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+      {/* 3D Viewport Header: Clean Aerospace Specification */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 border-b border-[#e5e9f0] bg-[#f8fafc] z-10">
         <div className="flex items-center space-x-2">
-          <Wrench className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-          <h2 className="text-xs font-chakra font-bold tracking-wider text-slate-900 dark:text-white uppercase">
-            [AERO PISTON 3D TWIN] ROTAX 914-F TURBO // 4-STROKE BOXER
+          <Wrench className="w-4 h-4 text-[#00897b]" />
+          <h2 className="text-xs font-bold tracking-wider text-[#1a3a5c] uppercase">
+            3D DIGITAL TWIN • 4-STROKE TURBOCHARGED AERO ENGINE
           </h2>
-          <span className="hidden sm:inline text-[9px] font-chakra px-1.5 py-0.5 rounded bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 font-bold">
-            TAPAS-BH-201 MALE UAV PROPULSION
+          <span className="hidden sm:inline text-[10px] px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 font-semibold">
+            REAL-TIME KINEMATICS
           </span>
         </div>
 
-        {/* View Scope Toggle (Isolated Engine Stand vs Nacelle Airframe Context) */}
-        <div className="flex items-center space-x-1.5 text-[10px] font-chakra">
+        {/* View Scope Toggle */}
+        <div className="flex items-center space-x-1.5 text-xs">
           <button
             onClick={() => setViewScope('ENGINE_STAND')}
-            className={`px-2 py-0.5 rounded font-bold uppercase transition-all ${
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold uppercase transition-all ${
               viewScope === 'ENGINE_STAND'
-                ? 'bg-cyan-700 text-white shadow-sm'
-                : 'bg-slate-200 dark:bg-[#122035] text-slate-700 dark:text-slate-300 hover:bg-slate-300'
+                ? 'bg-[#1a3a5c] text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
             }`}
           >
-            ENGINE TEST STAND
+            Engine Stand
           </button>
           <button
             onClick={() => setViewScope('NACELLE_MOUNT')}
-            className={`px-2 py-0.5 rounded font-bold uppercase transition-all ${
+            className={`px-2.5 py-1 rounded-md text-xs font-semibold uppercase transition-all ${
               viewScope === 'NACELLE_MOUNT'
-                ? 'bg-cyan-700 text-white shadow-sm'
-                : 'bg-slate-200 dark:bg-[#122035] text-slate-700 dark:text-slate-300 hover:bg-slate-300'
+                ? 'bg-[#1a3a5c] text-white shadow-xs'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
             }`}
           >
-            UAV NACELLE MOUNT
+            Airframe Nacelle
           </button>
         </div>
       </div>

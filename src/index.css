@@ -2,233 +2,60 @@
 
 @layer base {
   :root {
-    /* Light Theme (DRDO GCS Tactical Daylight Mode - DEFAULT) */
-    --drdo-bg-page: #f1f5f9;
-    --drdo-bg-base: #f8fafc;
-    --drdo-bg-card: #ffffff;
-    --drdo-bg-card-subtle: #f1f5f9;
-    --drdo-bg-card-inset: #e2e8f0;
-    --drdo-border: #cbd5e1;
-    --drdo-border-bold: #94a3b8;
-    --drdo-border-accent: #0284c7;
-    --drdo-text-primary: #020617;
-    --drdo-text-secondary: #334155;
-    --drdo-text-muted: #64748b;
-    --drdo-accent-blue: #0284c7;
-    --drdo-accent-navy: #0f172a;
-    --drdo-accent-saffron: #d97706;
-    --drdo-accent-green: #059669;
-    --drdo-accent-red: #dc2626;
-  }
-
-  .dark {
-    /* Dark Theme (DRDO GCS Tactical Night Ops Mode) */
-    --drdo-bg-page: #060a12;
-    --drdo-bg-base: #0a1120;
-    --drdo-bg-card: #0d172a;
-    --drdo-bg-card-subtle: #0f1c33;
-    --drdo-bg-card-inset: #070e1b;
-    --drdo-border: #1e3250;
-    --drdo-border-bold: #335380;
-    --drdo-border-accent: #38bdf8;
-    --drdo-text-primary: #f8fafc;
-    --drdo-text-secondary: #cbd5e1;
-    --drdo-text-muted: #94a3b8;
-    --drdo-accent-blue: #38bdf8;
-    --drdo-accent-navy: #38bdf8;
-    --drdo-accent-saffron: #f59e0b;
-    --drdo-accent-green: #10b981;
-    --drdo-accent-red: #ef4444;
+    /* Clean Light Aerospace Ground Control Station Theme */
+    --aerospace-bg-page: #f5f7fa;
+    --aerospace-bg-card: #ffffff;
+    --aerospace-bg-subtle: #f8fafc;
+    --aerospace-border: #e2e8f0;
+    --aerospace-navy: #1a3a5c;
+    --aerospace-teal: #00897b;
+    --aerospace-amber: #ff8c00;
+    --aerospace-red: #e53935;
   }
 
   body {
-    background-color: var(--drdo-bg-page);
-    color: var(--drdo-text-primary);
+    background-color: #f5f7fa;
+    color: #1e293b;
     overflow-x: hidden;
-    font-family: 'Chakra Petch', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    letter-spacing: 0.015em;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.01em;
   }
 
-  /* Light Theme Grid Pattern */
-  body:not(.dark) {
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.06) 0%, transparent 60%),
-      linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
-    background-size: 100% 100%, 32px 32px, 32px 32px;
+  /* Aerospace Card: Soft rounded corners, subtle shadows */
+  .aero-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e9f0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .aero-card:hover {
+    box-shadow: 0 4px 16px rgba(26, 58, 92, 0.06);
   }
 
-  /* Dark Theme Grid Pattern */
-  body.dark {
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 60%),
-      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 32px 32px, 32px 32px;
-  }
-
-  /* Font utilities */
-  .font-chakra {
-    font-family: 'Chakra Petch', sans-serif;
-  }
-  .font-rajdhani {
-    font-family: 'Rajdhani', sans-serif;
-  }
-  .font-tech {
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  /* Custom DRDO GCS Tactical Scrollbar */
+  /* Custom Clean Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--drdo-bg-base);
+    background: #f1f5f9;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--drdo-border-bold);
-    border-radius: 2px;
-    border: 1px solid var(--drdo-border);
+    background: #cbd5e1;
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--drdo-accent-blue);
+    background: #94a3b8;
   }
 
-  /* DRDO Panel with technical corner accents */
-  .drdo-card {
-    background-color: var(--drdo-bg-card);
-    border: 1px solid var(--drdo-border);
-    position: relative;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  .font-chakra {
+    font-family: 'Chakra Petch', -apple-system, BlinkMacSystemFont, sans-serif;
   }
-  .dark .drdo-card {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  .font-rajdhani {
+    font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
   }
-
-  /* Precision Technical Corner Accents */
-  .drdo-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 7px;
-    height: 7px;
-    border-top: 2px solid var(--drdo-accent-blue);
-    border-left: 2px solid var(--drdo-accent-blue);
-    pointer-events: none;
-  }
-  .drdo-card::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 7px;
-    height: 7px;
-    border-bottom: 2px solid var(--drdo-accent-blue);
-    border-right: 2px solid var(--drdo-accent-blue);
-    pointer-events: none;
-  }
-
-  /* Industrial Monospaced-Engineering Typography for Headers and Data Labels */
-  h1, h2, h3, h4, h5, h6,
-  .font-chakra,
-  .font-rajdhani,
-  th,
-  label {
-    font-family: 'Chakra Petch', sans-serif !important;
-    letter-spacing: 0.03em;
-  }
-
-  /* =================================================================
-     HIGH-CONTRAST LIGHT THEME (DRDO DAYLIGHT GCS SPECIFICATION)
-     ================================================================= */
-  body:not(.dark) .drdo-card {
-    background-color: #ffffff;
-    border-color: #cbd5e1;
-    color: #020617;
-  }
-  body:not(.dark) .drdo-card::before,
-  body:not(.dark) .drdo-card::after {
-    border-color: #0284c7;
-  }
-
-  /* Inner Card Panels & Insets in Light Theme */
-  body:not(.dark) .bg-\[\#070c17\],
-  body:not(.dark) .bg-\[\#050a14\],
-  body:not(.dark) .bg-\[\#040812\],
-  body:not(.dark) .bg-\[\#08101e\],
-  body:not(.dark) .bg-\[\#0a1120\],
-  body:not(.dark) .bg-\[\#0a1220\],
-  body:not(.dark) .bg-\[\#0b1526\],
-  body:not(.dark) .bg-\[\#0e1422\],
-  body:not(.dark) .bg-\[\#070d18\],
-  body:not(.dark) .bg-\[\#091322\],
-  body:not(.dark) .bg-\[\#060b17\],
-  body:not(.dark) .bg-\[\#080f1d\],
-  body:not(.dark) .bg-slate-950,
-  body:not(.dark) .bg-slate-900 {
-    background-color: #f8fafc;
-    border-color: #cbd5e1;
-  }
-
-  /* Normalize Borders in Light Theme */
-  body:not(.dark) .border-\[\#18263a\],
-  body:not(.dark) .border-\[\#16253a\],
-  body:not(.dark) .border-\[\#1c2e47\],
-  body:not(.dark) .border-\[\#1b2a40\],
-  body:not(.dark) .border-\[\#1d314d\],
-  body:not(.dark) .border-\[\#1f3554\],
-  body:not(.dark) .border-\[\#18283e\],
-  body:not(.dark) .border-\[\#233854\],
-  body:not(.dark) .border-slate-800,
-  body:not(.dark) .border-slate-700 {
-    border-color: #cbd5e1;
-  }
-
-  /* High-Contrast Light Theme Text */
-  body:not(.dark) .text-white,
-  body:not(.dark) .text-slate-100,
-  body:not(.dark) .text-slate-200 {
-    color: #020617;
-  }
-  body:not(.dark) .text-slate-300,
-  body:not(.dark) .text-slate-400 {
-    color: #334155;
-    font-weight: 500;
-  }
-  body:not(.dark) .text-slate-500 {
-    color: #475569;
-  }
-  body:not(.dark) .text-cyan-400 {
-    color: #0284c7;
-  }
-  body:not(.dark) .text-cyan-300 {
-    color: #0369a1;
-  }
-  body:not(.dark) .text-amber-400 {
-    color: #b45309;
-  }
-  body:not(.dark) .text-emerald-400 {
-    color: #047857;
-  }
-
-  /* =================================================================
-     HIGH-CONTRAST DARK THEME (TACTICAL NIGHT OPS SPECIFICATION)
-     ================================================================= */
-  body.dark .text-slate-400 {
-    color: #cbd5e1; /* Increased contrast for text on dark backgrounds */
-  }
-  body.dark .text-slate-500 {
-    color: #94a3b8;
-  }
-  body.dark .bg-\[\#070c17\],
-  body.dark .bg-\[\#050a14\],
-  body.dark .bg-\[\#0a1120\] {
-    background-color: #091222;
-    border-color: #1e3250;
+  .font-tech {
+    font-family: 'Share Tech Mono', monospace;
   }
 }
-
