@@ -19,6 +19,7 @@ interface Engine3DViewProps {
   onSelectSensor?: (sensorId: string) => void;
   selectedSensor?: string | null;
   theme?: 'light' | 'dark';
+  isPaused?: boolean;
 }
 
 interface Sensor3DDef {
@@ -37,7 +38,13 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
   onSelectSensor,
   selectedSensor,
   theme = 'light',
+  isPaused = false,
 }) => {
+  const isPausedRef = useRef<boolean>(isPaused);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -833,22 +840,25 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
       const rpm = curTel?.rpm || 5200;
       const omega = (rpm / 60) * Math.PI * 2 * 0.016; // per frame step
 
-      crankAngleRad += omega * 0.45;
-      const cycleAngle720 = ((crankAngleRad * (180 / Math.PI)) % 720 + 720) % 720;
+      if (!isPausedRef.current) {
+        crankAngleRad += omega * 0.45;
 
-      // A. Spin Propeller & Crankshaft
-      if (propellerRef.current) {
-        propellerRef.current.rotation.z -= omega * (1 / 2.43); // Gearbox ratio
+        // A. Spin Propeller & Crankshaft
+        if (propellerRef.current) {
+          propellerRef.current.rotation.z -= omega * (1 / 2.43); // Gearbox ratio
+        }
+        if (crankshaftRef.current) {
+          crankshaftRef.current.rotation.z -= omega;
+        }
+        if (turboImpellerRef.current) {
+          turboImpellerRef.current.rotation.z += omega * 4.5; // Turbo high-speed spin
+        }
+        if (turbineRotorRef.current) {
+          turbineRotorRef.current.rotation.z += omega * 4.5;
+        }
       }
-      if (crankshaftRef.current) {
-        crankshaftRef.current.rotation.z -= omega;
-      }
-      if (turboImpellerRef.current) {
-        turboImpellerRef.current.rotation.z += omega * 4.5; // Turbo high-speed spin
-      }
-      if (turbineRotorRef.current) {
-        turbineRotorRef.current.rotation.z += omega * 4.5;
-      }
+
+      const cycleAngle720 = ((crankAngleRad * (180 / Math.PI)) % 720 + 720) % 720;
 
       // Dynamic Propeller Blade Pitch Angle from Simulation
       const propPitchDeg = curTel?.propellerPitchDeg || 22;
