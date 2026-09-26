@@ -78,13 +78,15 @@ export interface RulEstimate {
 }
 
 export type MissionPhase =
+  | 'PRE_FLIGHT'
   | 'TAKEOFF'
   | 'CLIMB'
   | 'CRUISE'
   | 'HIGH_ALTITUDE_LOITER'
   | 'THROTTLE_TRANSITION'
   | 'DESCENT'
-  | 'LANDING';
+  | 'LANDING'
+  | 'POST_FLIGHT';
 
 export interface MissionPhaseConfig {
   phase: MissionPhase;
@@ -135,4 +137,21 @@ export interface DemoStep {
   rulRange: string;
   alertLevel: 'NORMAL' | 'WARNING' | 'CRITICAL';
   advisory: string;
+}
+
+export type UserRole = 'OPERATOR' | 'ENGINEER' | 'MAINTENANCE' | 'REPORTS' | 'EDGE_AI';
+
+export interface WorkOrderItem {
+  id: string;
+  taskCode: string;
+  title: string;
+  component: string;
+  priority: 'CRITICAL' | 'SCHEDULED' | 'ADVISORY';
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  dueHours: number;
+  estimatedLaborHours: number;
+  partNumber: string;
+  assignedTechnician: string;
+  description: string;
+  dateCreated: string;
 }

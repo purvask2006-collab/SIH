@@ -26,10 +26,12 @@ export const AerospaceSimulationHero: React.FC<AerospaceSimulationHeroProps> = (
   onReset,
   theme = 'light',
 }) => {
+  const safeControls = controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 };
+
   const handleThrottleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
     onControlsChange({
-      ...controls,
+      ...safeControls,
       throttle: val,
       engineLoad: Math.min(100, Math.round(val * 1.05)),
     });
@@ -40,7 +42,7 @@ export const AerospaceSimulationHero: React.FC<AerospaceSimulationHeroProps> = (
     // Standard ISA temperature lapse rate approximation (-1.98 °C per 1000 ft)
     const lapseTemp = Math.round(15 - (val / 1000) * 1.98);
     onControlsChange({
-      ...controls,
+      ...safeControls,
       altitude: val,
       ambientTemp: lapseTemp,
     });
@@ -70,7 +72,7 @@ export const AerospaceSimulationHero: React.FC<AerospaceSimulationHeroProps> = (
           <button
             onClick={() => onSelectPreset('nominal')}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
-              activeFault === 'NORMAL' && controls.altitude < 18000
+              activeFault === 'NORMAL' && (safeControls.altitude ?? 8400) < 18000
                 ? 'bg-teal-700 text-white border-teal-800 shadow-xs'
                 : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
             }`}
@@ -82,7 +84,7 @@ export const AerospaceSimulationHero: React.FC<AerospaceSimulationHeroProps> = (
           <button
             onClick={() => onSelectPreset('altitude')}
             className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
-              controls.altitude >= 20000
+              (safeControls.altitude ?? 8400) >= 20000
                 ? 'bg-[#1a3a5c] text-white border-[#1a3a5c] shadow-xs'
                 : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
             }`}
@@ -182,7 +184,7 @@ export const AerospaceSimulationHero: React.FC<AerospaceSimulationHeroProps> = (
               <div className="flex justify-between text-[11px] mb-1">
                 <span className="text-slate-600 font-medium">Flight Altitude</span>
                 <span className="font-mono font-bold text-[#1a3a5c]">
-                  {controls.altitude.toLocaleString()} FT ({(controls.altitude * 0.3048).toFixed(0)} m)
+                  {(safeControls.altitude ?? 8400).toLocaleString()} FT ({((safeControls.altitude ?? 8400) * 0.3048).toFixed(0)} m)
                 </span>
               </div>
               <input
@@ -190,7 +192,7 @@ export const AerospaceSimulationHero: React.FC<AerospaceSimulationHeroProps> = (
                 min="0"
                 max="26000"
                 step="500"
-                value={controls.altitude}
+                value={safeControls.altitude ?? 8400}
                 onChange={handleAltitudeChange}
                 className="w-full accent-[#1a3a5c] cursor-pointer h-1.5 bg-slate-200 rounded-lg"
               />

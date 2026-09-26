@@ -2,35 +2,47 @@
 
 @layer base {
   :root {
-    /* Clean Light Aerospace Ground Control Station Theme */
-    --aerospace-bg-page: #f5f7fa;
-    --aerospace-bg-card: #ffffff;
-    --aerospace-bg-subtle: #f8fafc;
-    --aerospace-border: #e2e8f0;
-    --aerospace-navy: #1a3a5c;
-    --aerospace-teal: #00897b;
-    --aerospace-amber: #ff8c00;
-    --aerospace-red: #e53935;
+    /* Dark Aerospace Ground Control Station Theme (Default) */
+    --aerospace-bg-page: #050b14;
+    --aerospace-bg-card: #08101e;
+    --aerospace-bg-subtle: #0d1b2e;
+    --aerospace-border: #162a45;
+    --aerospace-border-bright: #203e66;
+    --aerospace-cyan: #00f0ff;
+    --aerospace-teal: #14b8a6;
+    --aerospace-amber: #f59e0b;
+    --aerospace-red: #ef4444;
   }
 
   body {
-    background-color: #f5f7fa;
-    color: #1e293b;
+    background-color: #050b14;
+    color: #e2e8f0;
     overflow-x: hidden;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     letter-spacing: 0.01em;
   }
 
-  /* Aerospace Card: Soft rounded corners, subtle shadows */
+  body.light {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
+
+  /* Aerospace Card */
   .aero-card {
-    background-color: #ffffff;
-    border: 1px solid #e5e9f0;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+    background-color: #08101e;
+    border: 1px solid #162a45;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
   .aero-card:hover {
-    box-shadow: 0 4px 16px rgba(26, 58, 92, 0.06);
+    border-color: #203e66;
+  }
+
+  .light .aero-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
   /* Custom Clean Scrollbar */
@@ -39,23 +51,75 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: #060d19;
   }
   ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
+    background: #182c48;
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: #23426d;
   }
 
   .font-chakra {
-    font-family: 'Chakra Petch', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Chakra Petch', 'Plus Jakarta Sans', sans-serif;
   }
   .font-rajdhani {
-    font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Rajdhani', 'Plus Jakarta Sans', sans-serif;
   }
   .font-tech {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
   }
 }
+
+@keyframes dataStreamFlow {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes signalPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes packetTravel {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-data-stream {
+  stroke-dasharray: 6 4;
+  animation: dataStreamFlow 1.2s linear infinite;
+}
+
+.animate-signal-pulse {
+  animation: signalPulse 2s ease-in-out infinite;
+}
+
+.animate-packet-travel {
+  animation: packetTravel 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+

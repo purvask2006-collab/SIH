@@ -16,6 +16,7 @@ interface MissionSimulationPanelProps {
 }
 
 const PHASE_CODES: Record<MissionPhase, string> = {
+  PRE_FLIGHT: 'PH-00',
   TAKEOFF: 'PH-01',
   CLIMB: 'PH-02',
   CRUISE: 'PH-03',
@@ -23,6 +24,7 @@ const PHASE_CODES: Record<MissionPhase, string> = {
   THROTTLE_TRANSITION: 'PH-05',
   DESCENT: 'PH-06',
   LANDING: 'PH-07',
+  POST_FLIGHT: 'PH-08',
 };
 
 export const MissionSimulationPanel: React.FC<MissionSimulationPanelProps> = ({
@@ -71,6 +73,7 @@ export const MissionSimulationPanel: React.FC<MissionSimulationPanelProps> = ({
       <div className="flex flex-wrap gap-1.5">
         {phaseKeys.map((pk) => {
           const cfg = MISSION_PHASES[pk];
+          if (!cfg) return null;
           const isSelected = currentPhase === pk;
           const code = PHASE_CODES[pk] || 'PH-XX';
 
@@ -96,7 +99,7 @@ export const MissionSimulationPanel: React.FC<MissionSimulationPanelProps> = ({
       <div className="bg-[#070c17] p-2.5 rounded border border-[#16253a] text-xs font-chakra text-slate-300 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2">
           <span className="text-cyan-400 font-rajdhani font-bold tracking-wide uppercase">[SORTIE DIRECTIVE]:</span>
-          <span>{MISSION_PHASES[currentPhase].description}</span>
+          <span>{MISSION_PHASES[currentPhase]?.description || 'Nominal operational sortie profile.'}</span>
         </div>
         <div className="flex items-center space-x-1.5 text-[10px] font-tech text-slate-400">
           <Navigation className="w-3 h-3 text-emerald-400" />

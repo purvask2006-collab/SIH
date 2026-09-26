@@ -44,14 +44,14 @@ export const WhatIfSimulation: React.FC<WhatIfSimulationProps> = ({ currentHealt
         <div className="bg-[#070c17] p-2.5 rounded border border-[#18263a] space-y-1.5">
           <div className="flex justify-between text-[10px] font-tech">
             <span className="text-slate-400 uppercase">EN-ROUTE CEILING:</span>
-            <span className="text-emerald-400 font-bold">{scenario.altitude.toLocaleString()} FT</span>
+            <span className="text-emerald-400 font-bold">{(scenario?.altitude ?? 15000).toLocaleString()} FT</span>
           </div>
           <input
             type="range"
             min="0"
             max="20000"
             step="500"
-            value={scenario.altitude}
+            value={scenario?.altitude ?? 15000}
             onChange={(e) => updateScenario('altitude', Number(e.target.value))}
             className="w-full h-1.5 bg-[#040812] border border-[#16253a] rounded appearance-none cursor-pointer accent-emerald-400"
           />

@@ -23,7 +23,11 @@ export function simulateAeroPistonTelemetry(
   elapsedSeconds: number = 0,
   baseRemainingFuel: number = 42.0
 ): TelemetryData {
-  const { throttle, altitude, ambientTemp, engineLoad } = controls;
+  const safeControls = controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 };
+  const throttle = safeControls.throttle ?? 68;
+  const altitude = safeControls.altitude ?? 8400;
+  const ambientTemp = safeControls.ambientTemp ?? 15;
+  const engineLoad = safeControls.engineLoad ?? 70;
   const densityRatio = calculateAirDensityRatio(altitude);
 
   // --- Base Nominal Physics ---

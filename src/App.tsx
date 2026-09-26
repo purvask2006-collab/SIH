@@ -5,6 +5,7 @@ import {
   MissionPhase,
   OperatingControls as OperatingControlsType,
   TelemetryData,
+  UserRole,
 } from './types/engine';
 import { simulateAeroPistonTelemetry } from './services/physicsEngine';
 import {
@@ -42,14 +43,32 @@ import { VibesparMissionProfile } from './components/VibesparMissionProfile';
 import { VibesparEngineHealthIndex } from './components/VibesparEngineHealthIndex';
 import { VibesparAiDiagnostics } from './components/VibesparAiDiagnostics';
 import { VibesparBottomBar } from './components/VibesparBottomBar';
+import { OperatorView } from './components/personas/OperatorView';
+import { EngineerView } from './components/personas/EngineerView';
+import { MaintenanceView } from './components/personas/MaintenanceView';
+import { PythonDashCodeModal } from './components/PythonDashCodeModal';
+import { MissionReportsModule } from './components/reports/MissionReportsModule';
+import { EdgeAiSecurityPanel } from './components/edge/EdgeAiSecurityPanel';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function App() {
-  // Theme state: default to 'light' (Tactical Daylight Mode)
+  // Theme state: default to 'dark' (Aerospace Dark Navy Mode)
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('drdo_theme');
-    return saved === 'dark' ? 'dark' : 'light';
+    return saved === 'light' ? 'light' : 'dark';
   });
+
+  // Role Persona state (Operator, Propulsion Engineer, Maintenance Team)
+  const [currentRole, setCurrentRole] = useState<UserRole>('OPERATOR');
+
+  // Toggle 3D Engine state (toggleable per role)
+  const [show3DEngine, setShow3DEngine] = useState<boolean>(true);
+
+  // Python Dash Code modal state
+  const [isPythonModalOpen, setIsPythonModalOpen] = useState<boolean>(false);
+
+  // Mission-Wise Health Reports modal state (accessible from all roles)
+  const [isReportsModalOpen, setIsReportsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     localStorage.setItem('drdo_theme', theme);
@@ -261,19 +280,25 @@ export default function App() {
   const handleSelectMissionPhase = (phase: MissionPhase) => {
     setCurrentMissionPhase(phase);
     const cfg = MISSION_PHASES[phase];
-    setControls((prev) => ({
-      ...prev,
-      altitude: cfg.altitude,
-      throttle: cfg.throttle,
-      engineLoad: cfg.engineLoad,
-    }));
+    if (cfg) {
+      setControls((prev) => ({
+        ...prev,
+        altitude: cfg.altitude ?? prev?.altitude ?? 8400,
+        throttle: cfg.throttle ?? prev?.throttle ?? 68,
+        engineLoad: cfg.engineLoad ?? prev?.engineLoad ?? 70,
+      }));
+    }
   };
 
   // --- Flight Data Recorder (FDR) Replay Handler ---
   const handleReplayPointSelect = useCallback((point: MissionReplayPoint) => {
-    setControls(point.controls);
-    setActiveFault(point.fault);
-    setFaultSeverity(point.faultSeverity || 0.8);
+    if (point?.controls) {
+      setControls(point.controls);
+    }
+    if (point?.fault) {
+      setActiveFault(point.fault);
+    }
+    setFaultSeverity(point?.faultSeverity || 0.8);
   }, []);
 
   // --- Demo Mode Progression Controller ---
@@ -389,17 +414,23 @@ export default function App() {
           : 'bg-[#060a12] text-slate-100'
       }`}
     >
-      {/* 1. Header (Exact to screenshot: VIBESPAR, UAV-07, AERO-PISTON-01, MISSION-027, LIVE, UTC, CONNECTED) */}
+      {/* 1. Header with Role Selector, 3D Toggle, Reports, and Python Dash source */}
       <VibesparTopBar
         theme={theme}
         onToggleTheme={toggleTheme}
+        currentRole={currentRole}
+        onSelectRole={(r) => setCurrentRole(r)}
+        show3DEngine={show3DEngine}
+        onToggle3DEngine={() => setShow3DEngine(!show3DEngine)}
+        onOpenPythonModal={() => setIsPythonModalOpen(true)}
+        onOpenReportsModal={() => setIsReportsModalOpen(true)}
         uavId="UAV-07"
         engineId="AERO-PISTON-01"
         missionId="MISSION-027"
         isConnected={isLiveMode}
       />
 
-      {/* Main Dashboard Layout (Exact 3-Column Layout from Screenshot) */}
+      {/* Main Dashboard Layout (Dynamically re-rendered per selected role) */}
       <main className="flex-1 p-3 sm:p-4.5 max-w-[1780px] mx-auto w-full flex flex-col space-y-4">
         {/* Active Demo Mode Stepper Banner (when active) */}
         {isDemoActive && (
@@ -414,66 +445,90 @@ export default function App() {
           />
         )}
 
-        {/* The 3-Column Primary Grid from Screenshot */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-          {/* COLUMN 1: ENGINE VISUALIZATION (Reciprocating 4-cylinder cutaway + RPM readout + 3D toggle) */}
-          <div className="lg:col-span-4 flex flex-col">
-            <VibesparEngineVisualization
-              telemetry={latestTelemetry}
-              activeFault={activeFault}
-              theme={theme}
-              selectedSensor={selectedSensorId}
-              onSelectSensor={(id) => setSelectedSensorId(id)}
-            />
-          </div>
-
-          {/* COLUMN 2: TELEMETRY GAUGES + MISSION PROFILE */}
-          <div className="lg:col-span-5 flex flex-col space-y-4">
-            {/* Telemetry Gauges (RPM, CHT, EGT, OIL P, OIL T, VIBRATION) */}
-            <VibesparTelemetryGauges
-              telemetry={latestTelemetry}
-              theme={theme}
-            />
-
-            {/* Mission Profile (Phases, Altitude, Fuel Rem, Endurance, Elapsed, Decision Support) */}
-            <VibesparMissionProfile
-              currentPhase={currentMissionPhase}
-              onSelectPhase={handleSelectMissionPhase}
-              altitude={controls.altitude}
-              fuelRemainingL={62.4}
-              enduranceHours={3.4}
-              elapsedTimeStr={elapsedTimeStr}
-              decisionSupportText={
-                activeFault !== 'NORMAL' || anomalyScore > 0.5
-                  ? 'REDUCE LOAD / MONITOR'
-                  : 'NOMINAL ENVELOPE // CRUISE PROFILE'
+        {/* ROLE PERSONA 1: UAV OPERATOR (Mission Control HUD) */}
+        {currentRole === 'OPERATOR' && (
+          <OperatorView
+            telemetry={latestTelemetry}
+            health={healthScores}
+            activeFault={activeFault}
+            diagnostic={aiDiagnostics}
+            currentPhase={currentMissionPhase}
+            onSelectPhase={handleSelectMissionPhase}
+            show3DEngine={show3DEngine}
+            onToggle3DEngine={() => setShow3DEngine(!show3DEngine)}
+            theme={theme}
+            onInjectFault={(f) => {
+              setActiveFault(f);
+              if (f === 'NORMAL') {
+                setControls((prev) => ({ ...prev, throttle: 68, altitude: 8400 }));
               }
-              decisionSupportStatus={
-                aiDiagnostics.status === 'CRITICAL'
-                  ? 'CRITICAL'
-                  : activeFault !== 'NORMAL' || anomalyScore > 0.35
-                  ? 'WARNING'
-                  : 'NOMINAL'
+            }}
+            alerts={alerts}
+            onAcknowledgeAlerts={() => setAlerts([])}
+          />
+        )}
+
+        {/* ROLE PERSONA 2: PROPULSION ENGINEER (Thermodynamics, Physics Residuals, Actuators) */}
+        {currentRole === 'ENGINEER' && (
+          <EngineerView
+            telemetry={latestTelemetry}
+            telemetryHistory={telemetryHistory}
+            health={healthScores}
+            activeFault={activeFault}
+            diagnostic={aiDiagnostics}
+            controls={controls}
+            onChangeControls={setControls}
+            comparisonItems={comparisonItems}
+            show3DEngine={show3DEngine}
+            onToggle3DEngine={() => setShow3DEngine(!show3DEngine)}
+            theme={theme}
+            onInjectFault={(f) => {
+              setActiveFault(f);
+              if (f === 'NORMAL') {
+                setControls((prev) => ({ ...prev, throttle: 68, altitude: 8400 }));
               }
-              theme={theme}
-            />
-          </div>
+            }}
+            selectedSensorId={selectedSensorId}
+            onSelectSensorId={(id) => setSelectedSensorId(id)}
+          />
+        )}
 
-          {/* COLUMN 3: ENGINE HEALTH INDEX + AI DIAGNOSTICS */}
-          <div className="lg:col-span-3 flex flex-col space-y-4">
-            {/* Engine Health Index (74% overall health, warning badge, subsystem bars) */}
-            <VibesparEngineHealthIndex
-              health={healthScores}
-              theme={theme}
-            />
+        {/* ROLE PERSONA 3: MAINTENANCE TEAM (Prognostics, RUL, Fleet Timeline, Work Orders) */}
+        {currentRole === 'MAINTENANCE' && (
+          <MaintenanceView
+            telemetry={latestTelemetry}
+            health={healthScores}
+            activeFault={activeFault}
+            rul={rulEstimate}
+            diagnostic={aiDiagnostics}
+            show3DEngine={show3DEngine}
+            onToggle3DEngine={() => setShow3DEngine(!show3DEngine)}
+            theme={theme}
+            onOpenReportsModule={() => setIsReportsModalOpen(true)}
+          />
+        )}
 
-            {/* AI Diagnostics (0.81 anomaly score, cooling system degradation card) */}
-            <VibesparAiDiagnostics
-              diagnostic={aiDiagnostics}
-              theme={theme}
-            />
-          </div>
-        </div>
+        {/* ROLE PERSONA 4: MISSION REPORTS (Comprehensive Self-Contained Flight Test Reports Module) */}
+        {currentRole === 'REPORTS' && (
+          <MissionReportsModule
+            isInline={true}
+            onClose={() => setCurrentRole('OPERATOR')}
+            currentEngineHealth={Math.round(healthScores.overall)}
+          />
+        )}
+
+        {/* ROLE PERSONA 5 / INNOVATION TAB: EDGE AI & CYBER-PHYSICAL SECURITY */}
+        {currentRole === 'EDGE_AI' && (
+          <EdgeAiSecurityPanel
+            telemetry={latestTelemetry}
+            health={healthScores}
+            activeFault={activeFault}
+            diagnostic={aiDiagnostics}
+            theme={theme}
+          />
+        )}
+
+
 
         {/* Bottom Bar: FAULT INJECTION + DEMO MODE (Exact to Screenshot) */}
         <VibesparBottomBar
@@ -570,6 +625,30 @@ export default function App() {
                   onToggleLiveMode={() => setIsLiveMode(!isLiveMode)}
                 />
               </div>
+
+              {/* Innovation Showcase: Edge AI & Cyber-Physical Security Architecture */}
+              {currentRole !== 'EDGE_AI' && (
+                <div className="pt-2">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-chakra font-bold text-cyan-400 uppercase tracking-wider flex items-center space-x-1.5">
+                      <span>⚡ ONBOARD COMPUTING & CYBER-SECURITY LAB</span>
+                    </span>
+                    <button
+                      onClick={() => setCurrentRole('EDGE_AI')}
+                      className="text-[11px] font-tech text-cyan-300 hover:text-cyan-100 underline decoration-cyan-500/50"
+                    >
+                      Open in Full View ↗
+                    </button>
+                  </div>
+                  <EdgeAiSecurityPanel
+                    telemetry={latestTelemetry}
+                    health={healthScores}
+                    activeFault={activeFault}
+                    diagnostic={aiDiagnostics}
+                    theme={theme}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -594,6 +673,20 @@ export default function App() {
           </div>
         </footer>
       </main>
+
+      {/* Python Dash + Plotly Full Source Code Viewer & Export Modal */}
+      <PythonDashCodeModal
+        isOpen={isPythonModalOpen}
+        onClose={() => setIsPythonModalOpen(false)}
+      />
+
+      {/* Mission-Wise Health Reports Module (Shared across all roles) */}
+      <MissionReportsModule
+        isOpen={isReportsModalOpen}
+        onClose={() => setIsReportsModalOpen(false)}
+        currentEngineHealth={Math.round(healthScores.overall)}
+      />
     </div>
   );
 }
+

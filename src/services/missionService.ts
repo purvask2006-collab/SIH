@@ -9,6 +9,16 @@ import {
 import { calculateAirDensityRatio } from './physicsEngine';
 
 export const MISSION_PHASES: Record<MissionPhase, MissionPhaseConfig> = {
+  PRE_FLIGHT: {
+    phase: 'PRE_FLIGHT',
+    name: 'Pre-Flight Engine & Avionics Run-up',
+    altitude: 0,
+    throttle: 15,
+    engineLoad: 18,
+    nominalFuelFlow: 4.2,
+    nominalRisk: 'LOW',
+    description: 'Ground built-in test (BITE), dual magneto validation, cold cylinder baseline check.',
+  },
   TAKEOFF: {
     phase: 'TAKEOFF',
     name: 'Takeoff & Initial Ground Roll',
@@ -79,6 +89,16 @@ export const MISSION_PHASES: Record<MissionPhase, MissionPhaseConfig> = {
     nominalRisk: 'LOW',
     description: 'Final glide path power management, variable wind gust propeller loading.',
   },
+  POST_FLIGHT: {
+    phase: 'POST_FLIGHT',
+    name: 'Post-Flight Cooldown & Telemetry Dump',
+    altitude: 0,
+    throttle: 10,
+    engineLoad: 12,
+    nominalFuelFlow: 3.2,
+    nominalRisk: 'LOW',
+    description: 'Turbocharger cooldown idle, avionics log dump, solid-state flight recorder export.',
+  },
 };
 
 /**
@@ -88,7 +108,11 @@ export function calculateWhatIfPrediction(
   input: WhatIfScenarioInput,
   currentHealthIndex: number
 ): WhatIfPrediction {
-  const { altitude, ambientTemp, throttle, durationHours } = input;
+  const safeInput = input || { altitude: 15000, ambientTemp: 10, throttle: 70, durationHours: 4 };
+  const altitude = safeInput.altitude ?? 15000;
+  const ambientTemp = safeInput.ambientTemp ?? 10;
+  const throttle = safeInput.throttle ?? 70;
+  const durationHours = safeInput.durationHours ?? 4;
   const densityRatio = calculateAirDensityRatio(altitude);
   const throttleFactor = throttle / 100;
 

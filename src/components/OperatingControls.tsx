@@ -13,9 +13,16 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
   onChange,
   disabled = false,
 }) => {
+  const safeControls: OperatingControlsType = controls || {
+    throttle: 68,
+    altitude: 8400,
+    ambientTemp: 15,
+    engineLoad: 70,
+  };
+
   const updateField = (field: keyof OperatingControlsType, value: number) => {
     onChange({
-      ...controls,
+      ...safeControls,
       [field]: value,
     });
   };
@@ -103,7 +110,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
               <span>THROTTLE LEVER ANGLE (TLA)</span>
             </span>
             <span className="text-cyan-400 font-bold font-tech text-sm">
-              {controls.throttle}%
+              {safeControls.throttle ?? 68}%
             </span>
           </div>
           <input
@@ -112,7 +119,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
             max="100"
             step="1"
             disabled={disabled}
-            value={controls.throttle}
+            value={safeControls.throttle ?? 68}
             onChange={(e) => updateField('throttle', Number(e.target.value))}
             className="w-full h-1.5 bg-[#040812] border border-[#16253a] rounded appearance-none cursor-pointer accent-cyan-400"
           />
@@ -131,7 +138,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
               <span>ALTITUDE ENVELOPE (AMSL)</span>
             </span>
             <span className="text-emerald-400 font-bold font-tech text-sm">
-              {controls.altitude.toLocaleString()} FT
+              {(safeControls.altitude ?? 8400).toLocaleString()} FT
             </span>
           </div>
           <input
@@ -140,7 +147,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
             max="20000"
             step="250"
             disabled={disabled}
-            value={controls.altitude}
+            value={safeControls.altitude ?? 8400}
             onChange={(e) => updateField('altitude', Number(e.target.value))}
             className="w-full h-1.5 bg-[#040812] border border-[#16253a] rounded appearance-none cursor-pointer accent-emerald-400"
           />
@@ -160,14 +167,14 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
             </span>
             <span
               className={`font-bold font-tech text-sm ${
-                controls.ambientTemp > 35
+                (safeControls.ambientTemp ?? 15) > 35
                   ? 'text-rose-400'
-                  : controls.ambientTemp < 0
+                  : (safeControls.ambientTemp ?? 15) < 0
                   ? 'text-sky-300'
                   : 'text-amber-400'
               }`}
             >
-              {controls.ambientTemp > 0 ? `+${controls.ambientTemp}` : controls.ambientTemp} °C
+              {(safeControls.ambientTemp ?? 15) > 0 ? `+${safeControls.ambientTemp ?? 15}` : safeControls.ambientTemp ?? 15} °C
             </span>
           </div>
           <input
@@ -176,7 +183,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
             max="50"
             step="1"
             disabled={disabled}
-            value={controls.ambientTemp}
+            value={safeControls.ambientTemp ?? 15}
             onChange={(e) => updateField('ambientTemp', Number(e.target.value))}
             className="w-full h-1.5 bg-[#040812] border border-[#16253a] rounded appearance-none cursor-pointer accent-amber-400"
           />
@@ -195,7 +202,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
               <span>PROP CONSTANT SPEED TORQUE</span>
             </span>
             <span className="text-purple-400 font-bold font-tech text-sm">
-              {controls.engineLoad}%
+              {safeControls.engineLoad ?? 70}%
             </span>
           </div>
           <input
@@ -204,7 +211,7 @@ export const OperatingControls: React.FC<OperatingControlsProps> = ({
             max="100"
             step="1"
             disabled={disabled}
-            value={controls.engineLoad}
+            value={safeControls.engineLoad ?? 70}
             onChange={(e) => updateField('engineLoad', Number(e.target.value))}
             className="w-full h-1.5 bg-[#040812] border border-[#16253a] rounded appearance-none cursor-pointer accent-purple-400"
           />

@@ -42,6 +42,7 @@ export const KpiSummaryBanner: React.FC<KpiSummaryBannerProps> = ({
   onOpenTab,
   theme,
 }) => {
+  const safeControls = controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 };
   const isLight = theme === 'light';
 
   // Overall status classification
@@ -186,7 +187,7 @@ export const KpiSummaryBanner: React.FC<KpiSummaryBannerProps> = ({
               {Math.round(telemetry.rpm)}
             </div>
             <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
-              Throttle: <span className="font-bold text-slate-800 dark:text-slate-200">{controls.throttle}%</span>
+              Throttle: <span className="font-bold text-slate-800 dark:text-slate-200">{safeControls.throttle ?? 68}%</span>
             </div>
           </div>
           <div className="mt-2 text-[9px] font-tech text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
@@ -285,7 +286,7 @@ export const KpiSummaryBanner: React.FC<KpiSummaryBannerProps> = ({
           </div>
           <div className="mt-1">
             <div className="text-sm font-tech font-bold text-slate-900 dark:text-slate-100">
-              {(controls.altitude / 1000).toFixed(1)}k FT
+              {((safeControls.altitude ?? 8400) / 1000).toFixed(1)}k FT
             </div>
             <div className="text-[10px] font-chakra font-semibold text-cyan-700 dark:text-cyan-400 truncate mt-0.5">
               Phase: {missionPhase.replace(/_/g, ' ')}

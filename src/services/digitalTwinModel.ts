@@ -25,7 +25,11 @@ export interface ExpectedTelemetry {
  * at the given operating condition.
  */
 export function computeExpectedValues(controls: OperatingControls): ExpectedTelemetry {
-  const { throttle, altitude, ambientTemp, engineLoad } = controls;
+  const safeControls = controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 };
+  const throttle = safeControls.throttle ?? 68;
+  const altitude = safeControls.altitude ?? 8400;
+  const ambientTemp = safeControls.ambientTemp ?? 15;
+  const engineLoad = safeControls.engineLoad ?? 70;
   const densityRatio = calculateAirDensityRatio(altitude);
 
   const throttleFactor = throttle / 100;
