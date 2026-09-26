@@ -233,50 +233,62 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
     ];
   }, [activeFault]);
 
+  const isLight = theme === 'light';
+
   return (
-    <div className="w-full flex flex-col space-y-3.5 font-sans select-none text-slate-100 animate-fadeIn max-w-[1920px] mx-auto">
+    <div className={`w-full flex flex-col space-y-3.5 font-sans select-none animate-fadeIn max-w-[1920px] mx-auto ${
+      isLight ? 'text-slate-800' : 'text-slate-100'
+    }`}>
       {/* ========================================================================= */}
       {/* TOP HEADER: PROPULSION ANALYSIS BENCH & DIGITAL TWIN SYNC STATUS         */}
       {/* ========================================================================= */}
-      <section className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3 shadow-lg flex flex-wrap items-center justify-between gap-3">
+      <section className={`border rounded-lg p-3 flex flex-wrap items-center justify-between gap-3 ${
+        isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-lg'
+      }`}>
         <div className="flex items-center space-x-3">
-          <div className="p-2 rounded-md bg-cyan-950/60 border border-cyan-500/50 text-cyan-400">
+          <div className={`p-2 rounded-md border ${
+            isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-700' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-400'
+          }`}>
             <Cpu className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-chakra font-bold text-sm tracking-wider text-slate-100 uppercase">
+              <span className={`font-chakra font-bold text-sm tracking-wider uppercase ${
+                isLight ? 'text-slate-900' : 'text-slate-100'
+              }`}>
                 PROPULSION ENGINEER ANALYTICS BENCH // ROTAX 914-F TURBO
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-tech font-bold uppercase bg-emerald-950 border border-emerald-500/60 text-emerald-300">
+              <span className={`px-2 py-0.5 rounded text-[10px] font-tech font-bold uppercase border ${
+                isLight ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-emerald-950 border border-emerald-500/60 text-emerald-300'
+              }`}>
                 ● TWIN SYNCHRONIZED [Δt &lt; 12ms]
               </span>
             </div>
-            <p className="text-xs font-mono text-slate-400 mt-0.5">
+            <p className={`text-xs font-mono mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               Coupled Zero-D Thermodynamic Model • Physics Residuals • Indicator Cycle Analysis
             </p>
           </div>
         </div>
 
         {/* Live Technical Metrics */}
-        <div className="flex items-center space-x-4 font-mono text-xs text-slate-300">
+        <div className={`flex items-center space-x-4 font-mono text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
           <div className="text-right">
-            <div className="text-[9px] font-chakra text-slate-400 uppercase">Power Output</div>
-            <div className="text-cyan-400 font-bold text-sm">{powerKw} kW ({Math.round(powerKw * 1.341)} HP)</div>
+            <div className={`text-[9px] font-chakra uppercase ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Power Output</div>
+            <div className={`font-bold text-sm ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>{powerKw} kW ({Math.round(powerKw * 1.341)} HP)</div>
           </div>
-          <div className="border-l border-slate-700/60 pl-3 text-right">
-            <div className="text-[9px] font-chakra text-slate-400 uppercase">BSFC</div>
-            <div className={`font-bold text-sm ${isBsfcDegraded ? 'text-amber-400' : 'text-emerald-400'}`}>
+          <div className={`border-l pl-3 text-right ${isLight ? 'border-slate-200' : 'border-slate-700/60'}`}>
+            <div className={`text-[9px] font-chakra uppercase ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>BSFC</div>
+            <div className={`font-bold text-sm ${isBsfcDegraded ? (isLight ? 'text-amber-600' : 'text-amber-400') : (isLight ? 'text-emerald-600' : 'text-emerald-400')}`}>
               {bsfc} g/kWh
             </div>
           </div>
-          <div className="border-l border-slate-700/60 pl-3 text-right">
-            <div className="text-[9px] font-chakra text-slate-400 uppercase">Thermal Eff.</div>
-            <div className="text-emerald-400 font-bold text-sm">{thermalEff}%</div>
+          <div className={`border-l pl-3 text-right ${isLight ? 'border-slate-200' : 'border-slate-700/60'}`}>
+            <div className={`text-[9px] font-chakra uppercase ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Thermal Eff.</div>
+            <div className={`font-bold text-sm ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`}>{thermalEff}%</div>
           </div>
-          <div className="border-l border-slate-700/60 pl-3 text-right">
-            <div className="text-[9px] font-chakra text-slate-400 uppercase">Volumetric Eff.</div>
-            <div className="text-cyan-400 font-bold text-sm">{volumetricEff}%</div>
+          <div className={`border-l pl-3 text-right ${isLight ? 'border-slate-200' : 'border-slate-700/60'}`}>
+            <div className={`text-[9px] font-chakra uppercase ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Volumetric Eff.</div>
+            <div className={`font-bold text-sm ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>{volumetricEff}%</div>
           </div>
         </div>
       </section>
@@ -289,26 +301,34 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
         {/* COLUMN 1 (4 COLS): PANEL 1 — PHYSICS VS AI RESIDUAL MONITOR             */}
         {/* ======================================================================= */}
         <div className="lg:col-span-4 flex flex-col space-y-3.5">
-          <div className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
+          <div className={`border rounded-lg p-3.5 flex flex-col justify-between ${
+            isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+          }`}>
+            <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
               <div className="flex items-center space-x-2">
-                <Activity className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+                <Activity className={`w-4 h-4 ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
+                <h3 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                   PANEL 1: PHYSICS VS AI RESIDUAL MONITOR
                 </h3>
               </div>
-              <span className="text-[9px] font-mono text-cyan-400">2000ms UPDATE</span>
+              <span className={`text-[9px] font-mono ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>2000ms UPDATE</span>
             </div>
 
             {/* Channel Tabs */}
-            <div className="flex items-center space-x-1.5 bg-[#070b13] p-1 rounded border border-[#142338] mb-2 text-xs font-chakra">
+            <div className={`flex items-center space-x-1.5 p-1 rounded border mb-2 text-xs font-chakra ${
+              isLight ? 'bg-slate-100 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+            }`}>
               {(['CHT', 'EGT', 'OIL_P', 'MAP'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setResidualChannel(tab)}
                   className={`flex-1 py-1 text-[10px] font-bold rounded transition-all ${
                     residualChannel === tab
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60'
+                      ? isLight
+                        ? 'bg-white text-cyan-700 border border-slate-300 shadow-xs'
+                        : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60'
+                      : isLight
+                      ? 'text-slate-600 hover:text-slate-900 border border-transparent'
                       : 'text-slate-400 hover:text-slate-200 border border-transparent'
                   }`}
                 >
@@ -318,18 +338,20 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
             </div>
 
             {/* Color Code Legend */}
-            <div className="flex items-center justify-between text-[9px] font-mono text-slate-300 pb-2 border-b border-[#142338]">
+            <div className={`flex items-center justify-between text-[9px] font-mono pb-2 border-b ${
+              isLight ? 'border-slate-200 text-slate-600' : 'border-[#142338] text-slate-300'
+            }`}>
               <span className="flex items-center space-x-1">
-                <span className="w-3 h-0.5 bg-white inline-block" />
-                <span>Measured (Solid White)</span>
+                <span className={`w-3 h-0.5 inline-block ${isLight ? 'bg-slate-900' : 'bg-white'}`} />
+                <span>Measured ({isLight ? 'Solid Black' : 'Solid White'})</span>
               </span>
               <span className="flex items-center space-x-1">
                 <span className="w-3 h-0.5 bg-[#06b6d4] inline-block border-t border-dashed border-[#06b6d4]" />
-                <span className="text-cyan-400">Physics (Cyan Dashed)</span>
+                <span className={isLight ? 'text-cyan-700' : 'text-cyan-400'}>Physics (Cyan)</span>
               </span>
               <span className="flex items-center space-x-1">
                 <span className="w-3 h-0.5 bg-[#d946ef] inline-block border-t border-dotted border-[#d946ef]" />
-                <span className="text-fuchsia-400">AI Model (Magenta Dotted)</span>
+                <span className={isLight ? 'text-fuchsia-700' : 'text-fuchsia-400'}>AI Model (Magenta)</span>
               </span>
             </div>
 
@@ -337,30 +359,30 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
             <div className="h-44 w-full pt-1">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={residualTimeSeries} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#142338" />
-                  <XAxis dataKey="time" stroke="#64748b" tick={{ fontSize: 9, fill: '#94a3b8' }} />
-                  <YAxis stroke="#64748b" tick={{ fontSize: 9, fill: '#94a3b8' }} domain={['auto', 'auto']} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#e2e8f0' : '#142338'} />
+                  <XAxis dataKey="time" stroke={isLight ? '#94a3b8' : '#64748b'} tick={{ fontSize: 9, fill: isLight ? '#64748b' : '#94a3b8' }} />
+                  <YAxis stroke={isLight ? '#94a3b8' : '#64748b'} tick={{ fontSize: 9, fill: isLight ? '#64748b' : '#94a3b8' }} domain={['auto', 'auto']} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0a162a',
-                      borderColor: '#1e385c',
+                      backgroundColor: isLight ? '#ffffff' : '#0a162a',
+                      borderColor: isLight ? '#cbd5e1' : '#1e385c',
                       borderRadius: 4,
                       fontSize: 10,
-                      color: '#fff',
+                      color: isLight ? '#0f172a' : '#fff',
                     }}
                   />
                   {residualChannel === 'CHT' ? (
                     <>
-                      <Line type="monotone" dataKey="cyl1" name="Cyl 1" stroke="#ffffff" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-                      <Line type="monotone" dataKey="cyl2" name="Cyl 2" stroke="#e2e8f0" strokeWidth={1} dot={false} isAnimationActive={false} />
-                      <Line type="monotone" dataKey="cyl3" name="Cyl 3" stroke="#cbd5e1" strokeWidth={1} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="cyl1" name="Cyl 1" stroke={isLight ? '#0f172a' : '#ffffff'} strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="cyl2" name="Cyl 2" stroke="#ea580c" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="cyl3" name="Cyl 3" stroke="#64748b" strokeWidth={1} dot={false} isAnimationActive={false} />
                       <Line type="monotone" dataKey="cyl4" name="Cyl 4" stroke="#94a3b8" strokeWidth={1} dot={false} isAnimationActive={false} />
                       <Line type="monotone" dataKey="physicsCht" name="Physics Model" stroke="#06b6d4" strokeDasharray="5 5" strokeWidth={2} dot={false} isAnimationActive={false} />
                       <Line type="monotone" dataKey="aiCht" name="AI Predicted" stroke="#d946ef" strokeDasharray="2 2" strokeWidth={2} dot={false} isAnimationActive={false} />
                     </>
                   ) : (
                     <>
-                      <Line type="monotone" dataKey="measured" name="Measured" stroke="#ffffff" strokeWidth={2} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="measured" name="Measured" stroke={isLight ? '#0f172a' : '#ffffff'} strokeWidth={2} dot={false} isAnimationActive={false} />
                       <Line type="monotone" dataKey="predictedPhysics" name="Physics Model" stroke="#06b6d4" strokeDasharray="5 5" strokeWidth={2} dot={false} isAnimationActive={false} />
                       <Line type="monotone" dataKey="predictedAi" name="AI Model" stroke="#d946ef" strokeDasharray="2 2" strokeWidth={2} dot={false} isAnimationActive={false} />
                     </>
@@ -370,29 +392,33 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
             </div>
 
             {/* Subplot: Residual = Measured - Predicted with Confidence Bands */}
-            <div className="mt-2 pt-2 border-t border-[#142338]">
-              <div className="flex items-center justify-between text-[10px] font-chakra font-bold text-slate-300 mb-1">
+            <div className={`mt-2 pt-2 border-t ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
+              <div className={`flex items-center justify-between text-[10px] font-chakra font-bold mb-1 ${
+                isLight ? 'text-slate-700' : 'text-slate-300'
+              }`}>
                 <span>SUBPLOT: RESIDUAL (MEASURED - PREDICTED)</span>
-                <span className="font-mono text-cyan-400">95% CONFIDENCE BAND (±2.5)</span>
+                <span className={`font-mono ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>95% CONFIDENCE BAND (±2.5)</span>
               </div>
-              <div className="h-24 w-full bg-[#070b13] p-1 rounded border border-[#142338]">
+              <div className={`h-24 w-full p-1 rounded border ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+              }`}>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={residualTimeSeries} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#142338" />
-                    <XAxis dataKey="time" stroke="#64748b" tick={{ fontSize: 8, fill: '#94a3b8' }} />
-                    <YAxis domain={[-5, 5]} stroke="#64748b" tick={{ fontSize: 8, fill: '#94a3b8' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#e2e8f0' : '#142338'} />
+                    <XAxis dataKey="time" stroke={isLight ? '#94a3b8' : '#64748b'} tick={{ fontSize: 8, fill: isLight ? '#64748b' : '#94a3b8' }} />
+                    <YAxis domain={[-5, 5]} stroke={isLight ? '#94a3b8' : '#64748b'} tick={{ fontSize: 8, fill: isLight ? '#64748b' : '#94a3b8' }} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0a162a',
-                        borderColor: '#1e385c',
+                        backgroundColor: isLight ? '#ffffff' : '#0a162a',
+                        borderColor: isLight ? '#cbd5e1' : '#1e385c',
                         borderRadius: 4,
                         fontSize: 9,
-                        color: '#fff',
+                        color: isLight ? '#0f172a' : '#fff',
                       }}
                     />
-                    <Area type="monotone" dataKey="upperBand" stroke="transparent" fill="#1e3a5f" fillOpacity={0.3} />
-                    <Area type="monotone" dataKey="lowerBand" stroke="transparent" fill="#1e3a5f" fillOpacity={0.3} />
-                    <Line type="monotone" dataKey="residual" stroke="#00f0ff" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                    <Area type="monotone" dataKey="upperBand" stroke="transparent" fill={isLight ? '#bae6fd' : '#1e3a5f'} fillOpacity={0.35} />
+                    <Area type="monotone" dataKey="lowerBand" stroke="transparent" fill={isLight ? '#bae6fd' : '#1e3a5f'} fillOpacity={0.35} />
+                    <Line type="monotone" dataKey="residual" stroke="#0284c7" strokeWidth={1.5} dot={false} isAnimationActive={false} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -439,21 +465,25 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
         {/* ======================================================================= */}
         <div className="lg:col-span-4 flex flex-col space-y-3.5">
           {/* PANEL 2 — ENGINE EFFICIENCY TRENDS */}
-          <div className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
+          <div className={`border rounded-lg p-3.5 flex flex-col justify-between ${
+            isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+          }`}>
+            <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
               <div className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
-                <h3 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+                <TrendingUp className={`w-4 h-4 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+                <h3 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                   PANEL 2: ENGINE EFFICIENCY TRENDS
                 </h3>
               </div>
-              <span className="text-[9px] font-mono text-slate-400">TARGET: 280-320 g/kWh</span>
+              <span className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>TARGET: 280-320 g/kWh</span>
             </div>
 
             {/* Efficiency Degradation Alert Banner */}
             {isBsfcDegraded && (
-              <div className="mb-2 p-2 rounded bg-amber-950/40 border border-amber-500/80 text-amber-200 flex items-center space-x-2 text-xs font-chakra animate-pulse">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <div className={`mb-2 p-2 rounded border flex items-center space-x-2 text-xs font-chakra animate-pulse ${
+                isLight ? 'bg-amber-50 border-amber-300 text-amber-800' : 'bg-amber-950/40 border-amber-500/80 text-amber-200'
+              }`}>
+                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
                 <div>
                   <span className="font-bold">EFFICIENCY DEGRADATION ALERT: </span>
                   <span>BSFC elevated ({bsfc} g/kWh, &gt;10% baseline drift). Combustion efficiency decaying.</span>
@@ -464,27 +494,27 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
             {/* 4 Multi-Chart Grid for Efficiency */}
             <div className="grid grid-cols-2 gap-2">
               {/* Chart 1: BSFC */}
-              <div className="bg-[#070b13] p-2 rounded border border-[#142338]">
+              <div className={`p-2 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
                 <div className="flex justify-between text-[10px] font-chakra mb-1">
-                  <span className="text-slate-300 font-bold">BSFC (g/kWh)</span>
-                  <span className="font-mono text-cyan-400">{bsfc}</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>BSFC (g/kWh)</span>
+                  <span className={`font-mono ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>{bsfc}</span>
                 </div>
                 <div className="h-18 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={efficiencyHistory}>
                       <YAxis domain={[270, 360]} hide />
-                      <Line type="monotone" dataKey="bsfc" stroke={isBsfcDegraded ? '#f59e0b' : '#06b6d4'} strokeWidth={2} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="bsfc" stroke={isBsfcDegraded ? '#f59e0b' : '#0284c7'} strokeWidth={2} dot={false} isAnimationActive={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="text-[8px] font-mono text-slate-400 mt-1">Nominal Corridor: 280-320</div>
+                <div className={`text-[8px] font-mono mt-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Nominal Corridor: 280-320</div>
               </div>
 
               {/* Chart 2: Thermal Efficiency % */}
-              <div className="bg-[#070b13] p-2 rounded border border-[#142338]">
+              <div className={`p-2 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
                 <div className="flex justify-between text-[10px] font-chakra mb-1">
-                  <span className="text-slate-300 font-bold">Thermal Eff. %</span>
-                  <span className="font-mono text-emerald-400">{thermalEff}%</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Thermal Eff. %</span>
+                  <span className={`font-mono ${isLight ? 'text-emerald-700 font-bold' : 'text-emerald-400'}`}>{thermalEff}%</span>
                 </div>
                 <div className="h-18 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -494,92 +524,96 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="text-[8px] font-mono text-slate-400 mt-1">Target: 25-35%</div>
+                <div className={`text-[8px] font-mono mt-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Target: 25-35%</div>
               </div>
 
               {/* Chart 3: Volumetric Efficiency % */}
-              <div className="bg-[#070b13] p-2 rounded border border-[#142338]">
+              <div className={`p-2 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
                 <div className="flex justify-between text-[10px] font-chakra mb-1">
-                  <span className="text-slate-300 font-bold">Volumetric Eff.</span>
-                  <span className="font-mono text-cyan-400">{volumetricEff}%</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Volumetric Eff.</span>
+                  <span className={`font-mono ${isLight ? 'text-cyan-700 font-bold' : 'text-cyan-400'}`}>{volumetricEff}%</span>
                 </div>
                 <div className="h-18 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={efficiencyHistory}>
                       <YAxis domain={[75, 95]} hide />
-                      <Line type="monotone" dataKey="volEff" stroke="#00f0ff" strokeWidth={2} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="volEff" stroke="#0284c7" strokeWidth={2} dot={false} isAnimationActive={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="text-[8px] font-mono text-slate-400 mt-1">f(RPM, Altitude, Boost)</div>
+                <div className={`text-[8px] font-mono mt-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>f(RPM, Altitude, Boost)</div>
               </div>
 
               {/* Chart 4: Power Output vs Throttle */}
-              <div className="bg-[#070b13] p-2 rounded border border-[#142338]">
+              <div className={`p-2 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
                 <div className="flex justify-between text-[10px] font-chakra mb-1">
-                  <span className="text-slate-300 font-bold">Power Output</span>
-                  <span className="font-mono text-fuchsia-400">{powerKw} kW</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Power Output</span>
+                  <span className={`font-mono ${isLight ? 'text-purple-700 font-bold' : 'text-fuchsia-400'}`}>{powerKw} kW</span>
                 </div>
                 <div className="h-18 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={efficiencyHistory}>
                       <YAxis domain={[0, 90]} hide />
-                      <Line type="monotone" dataKey="power" stroke="#d946ef" strokeWidth={2} dot={false} isAnimationActive={false} />
+                      <Line type="monotone" dataKey="power" stroke="#8b5cf6" strokeWidth={2} dot={false} isAnimationActive={false} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="text-[8px] font-mono text-slate-400 mt-1">At {controls.throttle}% Throttle</div>
+                <div className={`text-[8px] font-mono mt-1 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>At {controls.throttle}% Throttle</div>
               </div>
             </div>
           </div>
 
           {/* PANEL 3 — THERMODYNAMIC CYCLE VISUALIZATION (P-V DIAGRAM) */}
-          <div className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
+          <div className={`border rounded-lg p-3.5 flex flex-col justify-between ${
+            isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+          }`}>
+            <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
               <div className="flex items-center space-x-2">
-                <Flame className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+                <Flame className={`w-4 h-4 ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
+                <h3 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                   PANEL 3: INDICATOR P-V CYCLE (PRESSURE-VOLUME)
                 </h3>
               </div>
-              <span className="text-[9px] font-mono text-cyan-400">AIR-STANDARD OTTO</span>
+              <span className={`text-[9px] font-mono ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>AIR-STANDARD OTTO</span>
             </div>
 
             {/* P-V Indicator Chart */}
             <div className="h-44 w-full pt-1">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={pvCycleData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#142338" />
-                  <XAxis dataKey="volume" stroke="#64748b" tick={{ fontSize: 9, fill: '#94a3b8' }} unit="cc" />
-                  <YAxis stroke="#64748b" tick={{ fontSize: 9, fill: '#94a3b8' }} unit="bar" domain={[0, 85]} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isLight ? '#e2e8f0' : '#142338'} />
+                  <XAxis dataKey="volume" stroke={isLight ? '#94a3b8' : '#64748b'} tick={{ fontSize: 9, fill: isLight ? '#64748b' : '#94a3b8' }} unit="cc" />
+                  <YAxis stroke={isLight ? '#94a3b8' : '#64748b'} tick={{ fontSize: 9, fill: isLight ? '#64748b' : '#94a3b8' }} unit="bar" domain={[0, 85]} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0a162a',
-                      borderColor: '#1e385c',
+                      backgroundColor: isLight ? '#ffffff' : '#0a162a',
+                      borderColor: isLight ? '#cbd5e1' : '#1e385c',
                       borderRadius: 4,
                       fontSize: 10,
-                      color: '#fff',
+                      color: isLight ? '#0f172a' : '#fff',
                     }}
                   />
-                  <Line type="monotone" dataKey="idealP" name="Ideal Otto Cycle" stroke="#06b6d4" strokeDasharray="4 4" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-                  <Line type="monotone" dataKey="actualP" name="Measured Actual Loop" stroke="#ffffff" strokeWidth={2} dot={false} isAnimationActive={false} />
+                  <Line type="monotone" dataKey="idealP" name="Ideal Otto Cycle" stroke="#0284c7" strokeDasharray="4 4" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                  <Line type="monotone" dataKey="actualP" name="Measured Actual Loop" stroke={isLight ? '#0f172a' : '#ffffff'} strokeWidth={2} dot={false} isAnimationActive={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
             {/* Cycle Annotations */}
-            <div className="mt-2 pt-2 border-t border-[#142338] grid grid-cols-3 gap-2 text-center text-xs font-chakra">
-              <div className="p-1.5 rounded bg-[#070b13] border border-[#142338]">
-                <div className="text-[9px] text-slate-400">COMPRESSION RATIO</div>
-                <div className="font-tech font-bold text-cyan-400 text-sm">9.0 : 1</div>
+            <div className={`mt-2 pt-2 border-t grid grid-cols-3 gap-2 text-center text-xs font-chakra ${
+              isLight ? 'border-slate-200' : 'border-[#142338]'
+            }`}>
+              <div className={`p-1.5 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
+                <div className={`text-[9px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>COMPRESSION RATIO</div>
+                <div className={`font-tech font-bold text-sm ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>9.0 : 1</div>
               </div>
-              <div className="p-1.5 rounded bg-[#070b13] border border-[#142338]">
-                <div className="text-[9px] text-slate-400">PEAK PRESSURE (Pmax)</div>
-                <div className="font-tech font-bold text-amber-400 text-sm">72.4 bar</div>
+              <div className={`p-1.5 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
+                <div className={`text-[9px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>PEAK PRESSURE (Pmax)</div>
+                <div className={`font-tech font-bold text-sm ${isLight ? 'text-amber-600' : 'text-amber-400'}`}>72.4 bar</div>
               </div>
-              <div className="p-1.5 rounded bg-[#070b13] border border-[#142338]">
-                <div className="text-[9px] text-slate-400">INDICATED MEP (IMEP)</div>
-                <div className="font-tech font-bold text-emerald-400 text-sm">11.8 bar</div>
+              <div className={`p-1.5 rounded border ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'}`}>
+                <div className={`text-[9px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>INDICATED MEP (IMEP)</div>
+                <div className={`font-tech font-bold text-sm ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`}>11.8 bar</div>
               </div>
             </div>
           </div>
@@ -590,15 +624,17 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
         {/* ======================================================================= */}
         <div className="lg:col-span-4 flex flex-col space-y-3.5">
           {/* PANEL 4 — SENSOR FUSION CORRELATION MATRIX */}
-          <div className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
+          <div className={`border rounded-lg p-3.5 flex flex-col justify-between ${
+            isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+          }`}>
+            <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
               <div className="flex items-center space-x-2">
-                <Share2 className="w-4 h-4 text-fuchsia-400" />
-                <h3 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+                <Share2 className={`w-4 h-4 ${isLight ? 'text-fuchsia-600' : 'text-fuchsia-400'}`} />
+                <h3 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                   PANEL 4: SENSOR FUSION MATRIX (CROSS-CORRELATION)
                 </h3>
               </div>
-              <span className="text-[9px] font-mono text-rose-400">RED = ANOMALY</span>
+              <span className={`text-[9px] font-mono ${isLight ? 'text-rose-600 font-bold' : 'text-rose-400'}`}>RED = ANOMALY</span>
             </div>
 
             {/* Heatmap Grid */}
@@ -606,9 +642,9 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
               <table className="w-full text-center text-[10px] font-mono border-collapse">
                 <thead>
                   <tr>
-                    <th className="p-1 text-left text-slate-400 font-chakra text-[9px]">PARAM</th>
+                    <th className={`p-1 text-left font-chakra text-[9px] ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>PARAM</th>
                     {sensorNames.map((s) => (
-                      <th key={s} className="p-1 text-slate-400 font-chakra text-[8px] truncate max-w-[40px]">
+                      <th key={s} className={`p-1 font-chakra text-[8px] truncate max-w-[40px] ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                         {s.split(' ')[0]}
                       </th>
                     ))}
@@ -617,7 +653,7 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                 <tbody>
                   {correlationMatrix.map((row, rIdx) => (
                     <tr key={rIdx}>
-                      <td className="p-1 text-left font-chakra font-bold text-slate-300 text-[9px] whitespace-nowrap">
+                      <td className={`p-1 text-left font-chakra font-bold text-[9px] whitespace-nowrap ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                         {sensorNames[rIdx]}
                       </td>
                       {row.map((val, cIdx) => {
@@ -629,24 +665,26 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                           (rIdx === 0 && cIdx === 3 && activeFault === 'MISFIRE') ||
                           (rIdx === 3 && cIdx === 0 && activeFault === 'MISFIRE');
 
-                        let bg = 'rgba(6, 182, 212, 0.15)';
-                        let color = '#06b6d4';
+                        let bg = isLight ? 'rgba(6, 182, 212, 0.08)' : 'rgba(6, 182, 212, 0.15)';
+                        let color = isLight ? '#0284c7' : '#06b6d4';
 
                         if (isAnomalous) {
-                          bg = 'rgba(239, 68, 68, 0.45)';
-                          color = '#fca5a5';
+                          bg = isLight ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.45)';
+                          color = isLight ? '#b91c1c' : '#fca5a5';
                         } else if (val < 0) {
-                          bg = 'rgba(59, 130, 246, 0.2)';
-                          color = '#93c5fd';
+                          bg = isLight ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.2)';
+                          color = isLight ? '#2563eb' : '#93c5fd';
                         } else if (val > 0.8) {
-                          bg = 'rgba(16, 185, 129, 0.25)';
-                          color = '#6ee7b7';
+                          bg = isLight ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.25)';
+                          color = isLight ? '#047857' : '#6ee7b7';
                         }
 
                         return (
                           <td
                             key={cIdx}
-                            className={`p-1.5 border border-[#142338] transition-colors ${
+                            className={`p-1.5 border transition-colors ${
+                              isLight ? 'border-slate-200' : 'border-[#142338]'
+                            } ${
                               isAnomalous ? 'animate-pulse font-bold border-rose-500' : ''
                             }`}
                             style={{ backgroundColor: bg, color }}
@@ -662,22 +700,26 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
               </table>
             </div>
 
-            <div className="mt-2 text-[9px] font-mono text-slate-400 flex items-center justify-between border-t border-[#142338] pt-1.5">
+            <div className={`mt-2 text-[9px] font-mono flex items-center justify-between border-t pt-1.5 ${
+              isLight ? 'border-slate-200 text-slate-500' : 'border-[#142338] text-slate-400'
+            }`}>
               <span>Sensor Pearson coefficient r [-1.0 to +1.0]</span>
-              <span className="text-rose-400 font-bold">Anomalies trigger proactive fault alert</span>
+              <span className={`font-bold ${isLight ? 'text-rose-600' : 'text-rose-400'}`}>Anomalies trigger proactive fault alert</span>
             </div>
           </div>
 
           {/* PANEL 5 — SIMULATION CONTROLS */}
-          <div className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
+          <div className={`border rounded-lg p-3.5 flex flex-col justify-between ${
+            isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+          }`}>
+            <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
               <div className="flex items-center space-x-2">
-                <Sliders className="w-4 h-4 text-cyan-400" />
-                <h3 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+                <Sliders className={`w-4 h-4 ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
+                <h3 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                   PANEL 5: SIMULATION ACTUATORS & FAULT LAB
                 </h3>
               </div>
-              <span className="text-[9px] font-tech text-cyan-400">ECU IN-THE-LOOP</span>
+              <span className={`text-[9px] font-tech ${isLight ? 'text-cyan-700 font-bold' : 'text-cyan-400'}`}>ECU IN-THE-LOOP</span>
             </div>
 
             {/* Sliders: Altitude, Ambient Temp, Air Density, Throttle */}
@@ -685,8 +727,8 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
               {/* Throttle */}
               <div>
                 <div className="flex justify-between text-[11px] mb-0.5">
-                  <span className="text-slate-300 font-bold">Throttle Position:</span>
-                  <span className="font-mono text-cyan-400">{controls?.throttle ?? 68}%</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Throttle Position:</span>
+                  <span className={`font-mono font-bold ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>{controls?.throttle ?? 68}%</span>
                 </div>
                 <input
                   type="range"
@@ -694,15 +736,15 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                   max="100"
                   value={controls?.throttle ?? 68}
                   onChange={(e) => onChangeControls({ ...(controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 }), throttle: Number(e.target.value) })}
-                  className="w-full accent-cyan-400 bg-[#070b13] cursor-pointer"
+                  className={`w-full cursor-pointer ${isLight ? 'accent-cyan-600 bg-slate-100' : 'accent-cyan-400 bg-[#070b13]'}`}
                 />
               </div>
 
               {/* Altitude */}
               <div>
                 <div className="flex justify-between text-[11px] mb-0.5">
-                  <span className="text-slate-300 font-bold">Altitude (MSL):</span>
-                  <span className="font-mono text-cyan-400">{controls?.altitude ?? 8400} FT</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Altitude (MSL):</span>
+                  <span className={`font-mono font-bold ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>{controls?.altitude ?? 8400} FT</span>
                 </div>
                 <input
                   type="range"
@@ -711,15 +753,15 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                   step="100"
                   value={controls?.altitude ?? 8400}
                   onChange={(e) => onChangeControls({ ...(controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 }), altitude: Number(e.target.value) })}
-                  className="w-full accent-cyan-400 bg-[#070b13] cursor-pointer"
+                  className={`w-full cursor-pointer ${isLight ? 'accent-cyan-600 bg-slate-100' : 'accent-cyan-400 bg-[#070b13]'}`}
                 />
               </div>
 
               {/* Ambient Temperature */}
               <div>
                 <div className="flex justify-between text-[11px] mb-0.5">
-                  <span className="text-slate-300 font-bold">Ambient Temperature:</span>
-                  <span className="font-mono text-amber-400">{controls?.ambientTemp ?? 15}°C</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Ambient Temperature:</span>
+                  <span className={`font-mono font-bold ${isLight ? 'text-amber-700' : 'text-amber-400'}`}>{controls?.ambientTemp ?? 15}°C</span>
                 </div>
                 <input
                   type="range"
@@ -727,15 +769,15 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                   max="50"
                   value={controls?.ambientTemp ?? 15}
                   onChange={(e) => onChangeControls({ ...(controls || { throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 }), ambientTemp: Number(e.target.value) })}
-                  className="w-full accent-amber-400 bg-[#070b13] cursor-pointer"
+                  className={`w-full cursor-pointer ${isLight ? 'accent-amber-600 bg-slate-100' : 'accent-amber-400 bg-[#070b13]'}`}
                 />
               </div>
 
               {/* Air Density */}
               <div>
                 <div className="flex justify-between text-[11px] mb-0.5">
-                  <span className="text-slate-300 font-bold">Air Density (ρ):</span>
-                  <span className="font-mono text-emerald-400">{airDensity.toFixed(2)} kg/m³</span>
+                  <span className={`font-bold ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>Air Density (ρ):</span>
+                  <span className={`font-mono font-bold ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>{airDensity.toFixed(2)} kg/m³</span>
                 </div>
                 <input
                   type="range"
@@ -744,14 +786,14 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                   step="0.01"
                   value={airDensity}
                   onChange={(e) => setAirDensity(Number(e.target.value))}
-                  className="w-full accent-emerald-400 bg-[#070b13] cursor-pointer"
+                  className={`w-full cursor-pointer ${isLight ? 'accent-emerald-600 bg-slate-100' : 'accent-emerald-400 bg-[#070b13]'}`}
                 />
               </div>
             </div>
 
             {/* Buttons: Fault Injections & Reset */}
-            <div className="mt-3 pt-2.5 border-t border-[#142338]">
-              <div className="text-[10px] font-chakra text-slate-400 uppercase tracking-wider mb-1.5">
+            <div className={`mt-3 pt-2.5 border-t ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
+              <div className={`text-[10px] font-chakra uppercase tracking-wider mb-1.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                 Fault Injections:
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-xs font-chakra">
@@ -759,17 +801,21 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                   onClick={() => onInjectFault('OVERHEATING')}
                   className={`p-1.5 rounded font-bold border transition-all text-[11px] ${
                     activeFault === 'OVERHEATING'
-                      ? 'bg-amber-600 text-white border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.4)]'
+                      ? 'bg-amber-600 text-white border-amber-400 shadow-sm'
+                      : isLight
+                      ? 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100'
                       : 'bg-[#070b13] text-amber-400 border-[#142338] hover:bg-[#0e1726]'
                   }`}
                 >
-                  ! Inject Cooling Fault
+                  ! Cooling Fault
                 </button>
                 <button
                   onClick={() => onInjectFault('MISFIRE')}
                   className={`p-1.5 rounded font-bold border transition-all text-[11px] ${
                     activeFault === 'MISFIRE'
-                      ? 'bg-orange-600 text-white border-orange-400 shadow-[0_0_10px_rgba(249,115,22,0.4)]'
+                      ? 'bg-orange-600 text-white border-orange-400 shadow-sm'
+                      : isLight
+                      ? 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'
                       : 'bg-[#070b13] text-orange-400 border-[#142338] hover:bg-[#0e1726]'
                   }`}
                 >
@@ -779,7 +825,9 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                   onClick={() => onInjectFault('LUBRICATION_FAILURE')}
                   className={`p-1.5 rounded font-bold border transition-all text-[11px] ${
                     activeFault === 'LUBRICATION_FAILURE'
-                      ? 'bg-rose-600 text-white border-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.4)]'
+                      ? 'bg-rose-600 text-white border-rose-400 shadow-sm'
+                      : isLight
+                      ? 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100'
                       : 'bg-[#070b13] text-rose-400 border-[#142338] hover:bg-[#0e1726]'
                   }`}
                 >
@@ -791,10 +839,15 @@ export const EngineerView: React.FC<EngineerViewProps> = ({
                     onChangeControls({ throttle: 68, altitude: 8400, ambientTemp: 15, engineLoad: 70 });
                     setAirDensity(1.08);
                   }}
-                  className="p-1.5 rounded font-bold border border-slate-600 bg-[#0e1a2d] hover:bg-[#162742] text-slate-200 transition-all text-[11px] flex items-center justify-center space-x-1"
+                  className={`p-1.5 rounded font-bold border transition-all text-[11px] ${
+                    activeFault === 'NORMAL'
+                      ? 'bg-emerald-600 text-white border-emerald-400 shadow-sm'
+                      : isLight
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                      : 'bg-[#070b13] text-emerald-400 border-[#142338] hover:bg-[#0e1726]'
+                  }`}
                 >
-                  <RotateCcw className="w-3 h-3 text-slate-400" />
-                  <span>Reset Simulation</span>
+                  ✓ Reset Nominal
                 </button>
               </div>
             </div>

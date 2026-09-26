@@ -27,6 +27,7 @@ export interface TelemetryData {
   manifoldPressure: number; // inHg
   busVoltage: number; // V
   powerHp: number; // Horsepower (calc)
+  torqueNm?: number; // Torque in Nm (calc)
   fuelRemainingKg: number; // Tank reserve
   // Enhanced Multi-Cylinder & Propulsion Channels
   chtCylinders: [number, number, number, number]; // CHT for Cyl 1, 2, 3, 4 (°C)
@@ -139,7 +140,7 @@ export interface DemoStep {
   advisory: string;
 }
 
-export type UserRole = 'OPERATOR' | 'ENGINEER' | 'MAINTENANCE' | 'REPORTS' | 'EDGE_AI';
+export type UserRole = 'OVERVIEW' | 'OPERATOR' | 'ENGINEER' | 'MAINTENANCE' | 'REPORTS' | 'EDGE_AI';
 
 export interface WorkOrderItem {
   id: string;

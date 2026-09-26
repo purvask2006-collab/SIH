@@ -49,17 +49,15 @@ import { MaintenanceView } from './components/personas/MaintenanceView';
 import { PythonDashCodeModal } from './components/PythonDashCodeModal';
 import { MissionReportsModule } from './components/reports/MissionReportsModule';
 import { EdgeAiSecurityPanel } from './components/edge/EdgeAiSecurityPanel';
+import { AeroPistonFrontPage } from './components/AeroPistonFrontPage';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function App() {
-  // Theme state: default to 'dark' (Aerospace Dark Navy Mode)
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('drdo_theme');
-    return saved === 'light' ? 'light' : 'dark';
-  });
+  // Theme state: default to 'light' (User requested: make everything light themed)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-  // Role Persona state (Operator, Propulsion Engineer, Maintenance Team)
-  const [currentRole, setCurrentRole] = useState<UserRole>('OPERATOR');
+  // Navigation / Role Persona state (default to Front Page Aero Piston Overview)
+  const [currentRole, setCurrentRole] = useState<UserRole>('OVERVIEW');
 
   // Toggle 3D Engine state (toggleable per role)
   const [show3DEngine, setShow3DEngine] = useState<boolean>(true);
@@ -93,9 +91,9 @@ export default function App() {
     engineLoad: 70,
   });
 
-  // Injected fault state (defaults to OVERHEATING / Cooling Degradation matching screenshot)
-  const [activeFault, setActiveFault] = useState<FaultType>('OVERHEATING');
-  const [faultSeverity, setFaultSeverity] = useState<number>(0.9);
+  // Injected fault state (defaults to INJECTOR_DEGRADATION matching reference image screenshot)
+  const [activeFault, setActiveFault] = useState<FaultType>('INJECTOR_DEGRADATION');
+  const [faultSeverity, setFaultSeverity] = useState<number>(0.7);
 
   // Advanced Digital Twin & Telemetry Lab drawer state
   const [showAdvancedTools, setShowAdvancedTools] = useState<boolean>(false);
@@ -410,7 +408,7 @@ export default function App() {
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors ${
         theme === 'light'
-          ? 'bg-[#f1f5f9] text-[#020617]'
+          ? 'bg-[#f8fafc] text-slate-900'
           : 'bg-[#060a12] text-slate-100'
       }`}
     >
@@ -445,7 +443,30 @@ export default function App() {
           />
         )}
 
-        {/* ROLE PERSONA 1: UAV OPERATOR (Mission Control HUD) */}
+        {/* ROLE PERSONA 0: OVERVIEW FRONT PAGE (Aero Piston Engine Dashboard with 3D Simulation Hero) */}
+        {currentRole === 'OVERVIEW' && (
+          <AeroPistonFrontPage
+            telemetry={latestTelemetry}
+            telemetryHistory={telemetryHistory}
+            health={healthScores}
+            activeFault={activeFault}
+            faultSeverity={faultSeverity}
+            diagnostic={aiDiagnostics}
+            rul={rulEstimate}
+            controls={controls}
+            theme={theme}
+            onInjectFault={(f, s) => {
+              setActiveFault(f);
+              setFaultSeverity(s !== undefined ? s : 0.7);
+              if (f === 'NORMAL') {
+                setControls((prev) => ({ ...prev, throttle: 68, altitude: 8400 }));
+              }
+            }}
+            onNavigateTab={(tab) => setCurrentRole(tab as UserRole)}
+          />
+        )}
+
+        {/* ROLE PERSONA 1: 3D ENGINE EXPLORER (Kinematics, Cutaways & Cockpit Controls) */}
         {currentRole === 'OPERATOR' && (
           <OperatorView
             telemetry={latestTelemetry}
@@ -653,23 +674,30 @@ export default function App() {
           )}
         </div>
 
-        {/* Footer Technical Metadata */}
+        {/* Footer Technical Metadata matching reference image */}
         <footer
-          className={`w-full pt-3 pb-3 text-[10px] font-tech border-t flex flex-wrap items-center justify-between gap-2 select-none uppercase tracking-wider ${
+          className={`w-full pt-4 pb-4 px-2 text-xs font-chakra border-t flex flex-wrap items-center justify-between gap-3 select-none ${
             theme === 'light'
-              ? 'border-slate-200 text-slate-500'
-              : 'border-[#18263a] text-slate-500'
+              ? 'border-slate-200 text-slate-600'
+              : 'border-[#15253b] text-slate-400'
           }`}
         >
-          <div className="flex items-center space-x-2">
-            <span className="text-cyan-600 dark:text-cyan-400 font-bold font-chakra text-xs tracking-widest">
-              VIBESPAR AERO-PISTON-01
+          <div className="flex items-center space-x-2.5">
+            <span className="font-extrabold tracking-wider text-cyan-600 dark:text-cyan-400">
+              VIBESPAR
             </span>
-            <span>•</span>
-            <span className="font-chakra">ROTAX 914-F TURBO DIGITAL TWIN // MALE UAV PROPULSION PHM</span>
+            <span className="text-slate-300 dark:text-slate-700">|</span>
+            <span className="tracking-wide text-slate-600 dark:text-slate-400">
+              Predict • Prevent • Fly
+            </span>
           </div>
-          <div className="font-chakra font-medium">
-            HIGH-FIDELITY FAULT PREDICTION & PROGNOSTICS • GROUND CONTROL STATION (GCS)
+          <div className="flex items-center space-x-2">
+            <svg className="w-5 h-5 text-slate-400 dark:text-slate-500" viewBox="0 0 48 24" fill="currentColor">
+              <path d="M24 8 L32 10 L44 11 L46 12 L32 13 L28 16 L24 22 L22 22 L24 16 L16 16 L12 20 L10 20 L12 14 L4 13 L2 12 L4 11 L16 10 L22 8 Z" opacity="0.8" />
+            </svg>
+            <span className="font-medium text-slate-600 dark:text-slate-400">
+              MALE UAV — Aero Piston Engine
+            </span>
           </div>
         </footer>
       </main>

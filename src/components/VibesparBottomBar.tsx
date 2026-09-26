@@ -28,6 +28,7 @@ export const VibesparBottomBar: React.FC<VibesparBottomBarProps> = ({
 
   const faultButtons: { label: string; fault: FaultType }[] = [
     { label: 'NORMAL', fault: 'NORMAL' },
+    { label: 'INJECTOR CLOGGING', fault: 'INJECTOR_DEGRADATION' },
     { label: 'COOLING DEGRADATION', fault: 'OVERHEATING' },
     { label: 'CYLINDER MISFIRE', fault: 'MISFIRE' },
     { label: 'OIL CIRCUIT', fault: 'LUBRICATION_FAILURE' },

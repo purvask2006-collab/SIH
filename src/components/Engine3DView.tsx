@@ -249,35 +249,69 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
     // 1. Scene & Environment
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(isLight ? 0xf8fafc : 0x060c16);
-    scene.fog = new THREE.FogExp2(isLight ? 0xf1f5f9 : 0x060c16, 0.038);
+    scene.fog = new THREE.FogExp2(isLight ? 0xf1f5f9 : 0x060c16, 0.032);
     sceneRef.current = scene;
 
     // 2. Camera Setup
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(3.8, 2.5, 4.5);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    camera.position.set(3.8, 2.4, 4.4);
     camera.lookAt(0, 0, 0.2);
     cameraRef.current = camera;
 
-    // 3. High-Fidelity Aerospace Lighting
-    const ambientLight = new THREE.AmbientLight(isLight ? 0xffffff : 0x93b4d7, isLight ? 1.35 : 0.95);
+    // 3. High-Fidelity Aerospace Studio Lighting
+    const ambientLight = new THREE.AmbientLight(isLight ? 0xffffff : 0x93b4d7, isLight ? 1.45 : 0.95);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, isLight ? 1.7 : 1.5);
-    keyLight.position.set(6, 10, 8);
+    // Primary Key Light (Simulating High-Bay Aerospace Cleanroom/Hangar Light)
+    const keyLight = new THREE.DirectionalLight(0xffffff, isLight ? 1.85 : 1.6);
+    keyLight.position.set(7, 12, 8);
+    keyLight.castShadow = true;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(isLight ? 0xbae6fd : 0x38bdf8, isLight ? 0.75 : 0.65);
-    fillLight.position.set(-7, -2, -5);
+    // Fill Light (Soft sky-blue tint for realistic alloy reflections)
+    const fillLight = new THREE.DirectionalLight(isLight ? 0xdbeafe : 0x38bdf8, isLight ? 0.85 : 0.65);
+    fillLight.position.set(-8, -2, -6);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(isLight ? 0x0284c7 : 0x38bdf8, 1.4, 20);
-    rimLight.position.set(0, 4, -4);
+    // Back Rim Light (Accentuates cooling fins and metal edges)
+    const rimLight = new THREE.PointLight(isLight ? 0x0284c7 : 0x38bdf8, isLight ? 1.6 : 1.4, 25);
+    rimLight.position.set(0, 4.5, -4.5);
     scene.add(rimLight);
 
-    // 4. Ground Inspection Grid
-    const gridHelper = new THREE.GridHelper(16, 32, isLight ? 0x0284c7 : 0x1e3a5f, isLight ? 0xcbd5e1 : 0x0f1d30);
+    // Bottom Bounce Light (Brightens lower crankcase and exhaust manifold)
+    const bounceLight = new THREE.DirectionalLight(isLight ? 0xf1f5f9 : 0x1e293b, isLight ? 0.6 : 0.4);
+    bounceLight.position.set(0, -6, 2);
+    scene.add(bounceLight);
+
+    // 4. Ground Inspection Grid & Soft Contact Drop-Shadow
+    const gridHelper = new THREE.GridHelper(16, 32, isLight ? 0x0284c7 : 0x1e3a5f, isLight ? 0xd1d5db : 0x0f1d30);
     gridHelper.position.y = -1.6;
     scene.add(gridHelper);
+
+    // Realistic Radial Ambient Occlusion Ground Contact Shadow Disc
+    const shadowCanvas = document.createElement('canvas');
+    shadowCanvas.width = 256;
+    shadowCanvas.height = 256;
+    const shadowCtx = shadowCanvas.getContext('2d');
+    if (shadowCtx) {
+      const gradient = shadowCtx.createRadialGradient(128, 128, 24, 128, 128, 124);
+      gradient.addColorStop(0, isLight ? 'rgba(30, 41, 59, 0.45)' : 'rgba(0, 0, 0, 0.85)');
+      gradient.addColorStop(0.5, isLight ? 'rgba(71, 85, 105, 0.22)' : 'rgba(0, 0, 0, 0.45)');
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      shadowCtx.fillStyle = gradient;
+      shadowCtx.fillRect(0, 0, 256, 256);
+    }
+    const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
+    const shadowGeo = new THREE.PlaneGeometry(5.2, 5.2);
+    shadowGeo.rotateX(-Math.PI / 2);
+    const shadowMat = new THREE.MeshBasicMaterial({
+      map: shadowTexture,
+      transparent: true,
+      depthWrite: false,
+    });
+    const shadowPlane = new THREE.Mesh(shadowGeo, shadowMat);
+    shadowPlane.position.set(0, -1.58, 0.2);
+    scene.add(shadowPlane);
 
     // -------------------------------------------------------------
     // BUILD THE AERO PISTON ENGINE (Rotax 914-F Turbocharged Boxer)
@@ -342,11 +376,27 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
       roughness: 0.5,
     });
 
-    // A. Central Crankcase Casting & Sump
+    // A. Central Crankcase Casting & Sump with Structural Webbing
     const crankcaseGeo = new THREE.BoxGeometry(1.24, 0.92, 1.85);
     const crankcase = new THREE.Mesh(crankcaseGeo, crankcaseMat);
     crankcase.position.set(0, 0, 0.2);
     engineRoot.add(crankcase);
+
+    // Crankcase Split-Flange Seam & Perimeter Assembly Bolts
+    const flangeSeamGeo = new THREE.BoxGeometry(1.26, 0.04, 1.87);
+    const flangeSeam = new THREE.Mesh(flangeSeamGeo, polishedAlloyMat);
+    flangeSeam.position.set(0, 0.02, 0.2);
+    engineRoot.add(flangeSeam);
+
+    // 14 Machined Perimeter Flange Bolts with Hexagonal Heads
+    for (let i = -0.8; i <= 0.8; i += 0.26) {
+      [-0.64, 0.64].forEach((bx) => {
+        const boltGeo = new THREE.CylinderGeometry(0.028, 0.028, 0.06, 6);
+        const bolt = new THREE.Mesh(boltGeo, chromeMat);
+        bolt.position.set(bx, 0.04, 0.2 + i);
+        engineRoot.add(bolt);
+      });
+    }
 
     // Sump Stiffening Ribs
     for (let i = -0.65; i <= 0.65; i += 0.28) {
@@ -366,6 +416,45 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
     const drainPlug = new THREE.Mesh(drainPlugGeo, brassMat);
     drainPlug.position.set(0, -0.84, 0.2);
     engineRoot.add(drainPlug);
+
+    // Rotax Spin-On Oil Filter Canister (Front Lower Starboard)
+    const filterCanisterGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.38, 18);
+    filterCanisterGeo.rotateX(Math.PI / 2);
+    const filterCanisterMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.6,
+      roughness: 0.3,
+    });
+    const filterCanister = new THREE.Mesh(filterCanisterGeo, filterCanisterMat);
+    filterCanister.position.set(0.46, -0.42, 0.88);
+    engineRoot.add(filterCanister);
+
+    // Filter Hex Nut & Lockwire Boss
+    const filterNutGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.06, 6);
+    filterNutGeo.rotateX(Math.PI / 2);
+    const filterNut = new THREE.Mesh(filterNutGeo, polishedAlloyMat);
+    filterNut.position.set(0.46, -0.42, 1.09);
+    engineRoot.add(filterNut);
+
+    // Starter Motor & Solenoid (Aft Lower Accessory Pad)
+    const starterGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.52, 16);
+    starterGeo.rotateX(Math.PI / 2);
+    const starterMesh = new THREE.Mesh(starterGeo, carbonPropMat);
+    starterMesh.position.set(-0.42, -0.28, -0.88);
+    engineRoot.add(starterMesh);
+
+    const solenoidGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.32, 12);
+    solenoidGeo.rotateX(Math.PI / 2);
+    const solenoidMesh = new THREE.Mesh(solenoidGeo, brassMat);
+    solenoidMesh.position.set(-0.42, -0.09, -0.82);
+    engineRoot.add(solenoidMesh);
+
+    // Alternator & Drive Pulley Belt (Aft Accessory Pad)
+    const altGeo = new THREE.CylinderGeometry(0.19, 0.19, 0.24, 16);
+    altGeo.rotateZ(Math.PI / 2);
+    const altMesh = new THREE.Mesh(altGeo, polishedAlloyMat);
+    altMesh.position.set(0.38, 0.38, -0.82);
+    engineRoot.add(altMesh);
 
     // B. Four Horizontally-Opposed Finned Cylinders & Moving Pistons
     // Rotax 914-F: Cyl 1 & 3 on Left (-X), Cyl 2 & 4 on Right (+X)
@@ -393,13 +482,20 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
       engineRoot.add(cylMesh);
       cylinderBlocksRef.current.push(cylMesh);
 
-      // Cooling Fins (7 fine cooling fins per cylinder)
-      for (let f = -0.28; f <= 0.28; f += 0.09) {
-        const finGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.02, 20);
+      // High-Density Cooling Fins (12 machined aluminum cooling fins per cylinder)
+      for (let f = -0.32; f <= 0.32; f += 0.058) {
+        const finGeo = new THREE.CylinderGeometry(0.43, 0.43, 0.016, 22);
         finGeo.rotateZ(Math.PI / 2);
         const fin = new THREE.Mesh(finGeo, cylinderFinMat);
         fin.position.set(pos.x + f, pos.y, pos.z);
         engineRoot.add(fin);
+
+        // Machined Silver Edge on each fin for photorealistic metallic glint
+        const finEdgeGeo = new THREE.TorusGeometry(0.43, 0.008, 6, 22);
+        finEdgeGeo.rotateY(Math.PI / 2);
+        const finEdge = new THREE.Mesh(finEdgeGeo, polishedAlloyMat);
+        finEdge.position.set(pos.x + f, pos.y, pos.z);
+        engineRoot.add(finEdge);
       }
 
       // Cylinder Head (Liquid-cooled jacket)
@@ -542,6 +638,30 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
       propGroup.add(bladePivot);
     }
 
+    // 6 Propeller Drive Hub Flange Attachment Bolts
+    for (let f = 0; f < 6; f++) {
+      const a = (f * Math.PI * 2) / 6;
+      const fBoltGeo = new THREE.CylinderGeometry(0.024, 0.024, 0.08, 6);
+      fBoltGeo.rotateX(Math.PI / 2);
+      const fBolt = new THREE.Mesh(fBoltGeo, polishedAlloyMat);
+      fBolt.position.set(Math.cos(a) * 0.17, 0.15 + Math.sin(a) * 0.17, 1.86);
+      engineRoot.add(fBolt);
+    }
+
+    // Cylinder 2 Injected Clog Thermal Warning Halo (Pulsing ring indicator)
+    const cyl2HotspotHaloGeo = new THREE.RingGeometry(0.44, 0.52, 24);
+    cyl2HotspotHaloGeo.rotateY(Math.PI / 2);
+    const cyl2HotspotHaloMat = new THREE.MeshBasicMaterial({
+      color: 0xf43f5e,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.85,
+    });
+    const cyl2HotspotHalo = new THREE.Mesh(cyl2HotspotHaloGeo, cyl2HotspotHaloMat);
+    cyl2HotspotHalo.position.set(1.42, 0.12, 0.4);
+    cyl2HotspotHalo.name = 'cyl2HotspotHalo';
+    engineRoot.add(cyl2HotspotHalo);
+
     // F. Garrett T25/T2 Turbocharger with Operating Wastegate Actuator
     const turboGroup = new THREE.Group();
     turboGroup.position.set(0, -0.35, -1.05);
@@ -606,7 +726,7 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
       exhaustPipesRef.current.push(pipeMesh);
     });
 
-    // H. Intake Airbox Plenum & Tuned Intake Runners with Blue Couplers
+    // H. Intake Airbox Plenum & Glowing Blue Tuned Intake Runners
     const plenumGeo = new THREE.CylinderGeometry(0.19, 0.19, 1.45, 16);
     plenumGeo.rotateZ(Math.PI / 2);
     const plenum = new THREE.Mesh(plenumGeo, polishedAlloyMat);
@@ -622,7 +742,17 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
       engineRoot.add(cMesh);
     });
 
-    // Intake Runners to cylinder heads
+    // Glowing Electric-Blue Intake Runners (Air/Fuel pathways matching reference image)
+    const glowingBlueIntakeMat = new THREE.MeshStandardMaterial({
+      color: 0x00d4ff,
+      emissive: 0x0088ff,
+      emissiveIntensity: 0.5,
+      metalness: 0.4,
+      roughness: 0.25,
+      transparent: true,
+      opacity: 0.88,
+    });
+
     cylPositions.forEach((pos) => {
       const runnerCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(pos.side * 0.45, 0.68, pos.z),
@@ -630,8 +760,70 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
         new THREE.Vector3(pos.x + pos.side * 0.4, pos.y + 0.2, pos.z),
       ]);
       const runnerGeo = new THREE.TubeGeometry(runnerCurve, 14, 0.046, 8, false);
-      const runnerMesh = new THREE.Mesh(runnerGeo, polishedAlloyMat);
+      const runnerMesh = new THREE.Mesh(runnerGeo, glowingBlueIntakeMat);
       engineRoot.add(runnerMesh);
+    });
+
+    // H2. Top-Mounted Electronic Control Unit (ECU) Housing & Cooling Ribs (Matching reference image)
+    const ecuBlackMat = new THREE.MeshStandardMaterial({
+      color: 0x111827,
+      metalness: 0.85,
+      roughness: 0.3,
+    });
+    const ecuBoxGeo = new THREE.BoxGeometry(0.68, 0.2, 0.85);
+    const ecuBox = new THREE.Mesh(ecuBoxGeo, ecuBlackMat);
+    ecuBox.position.set(0, 0.82, 0.22);
+    engineRoot.add(ecuBox);
+
+    // Heat sink fins on top of ECU
+    for (let ef = -0.32; ef <= 0.32; ef += 0.08) {
+      const eFinGeo = new THREE.BoxGeometry(0.66, 0.04, 0.02);
+      const eFin = new THREE.Mesh(eFinGeo, ecuBlackMat);
+      eFin.position.set(0, 0.94, 0.22 + ef);
+      engineRoot.add(eFin);
+    }
+
+    // ECU Harness Connector Plugs
+    [-0.32, 0.32].forEach((cPos) => {
+      const connGeo = new THREE.BoxGeometry(0.22, 0.12, 0.09);
+      const conn = new THREE.Mesh(connGeo, brassMat);
+      conn.position.set(0, 0.82, 0.22 + cPos);
+      engineRoot.add(conn);
+    });
+
+    // H3. Precision Fuel Injectors & Common Fuel Rail at Intake Ports (Matching reference image)
+    const injectorMat = new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      metalness: 0.9,
+      roughness: 0.2,
+    });
+    cylPositions.forEach((pos) => {
+      const injGroup = new THREE.Group();
+      injGroup.position.set(pos.x + pos.side * 0.28, pos.y + 0.36, pos.z);
+
+      const injCyl = new THREE.CylinderGeometry(0.042, 0.045, 0.24, 12);
+      const injMesh = new THREE.Mesh(injCyl, injectorMat);
+      injGroup.add(injMesh);
+
+      // Gold electrical solenoid clip
+      const clipGeo = new THREE.BoxGeometry(0.08, 0.07, 0.08);
+      const clip = new THREE.Mesh(clipGeo, brassMat);
+      clip.position.set(0, 0.12, 0);
+      injGroup.add(clip);
+
+      engineRoot.add(injGroup);
+    });
+
+    // Left and Right Fuel Rails connecting the injectors
+    [-1, 1].forEach((side) => {
+      const railCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(side * 0.62, 0.48, 0.68),
+        new THREE.Vector3(side * 0.62, 0.48, 0.1),
+        new THREE.Vector3(side * 0.62, 0.48, -0.42),
+      ]);
+      const railGeo = new THREE.TubeGeometry(railCurve, 12, 0.026, 8, false);
+      const rail = new THREE.Mesh(railGeo, chromeMat);
+      engineRoot.add(rail);
     });
 
     // I. External Dry Sump Oil Tank, Oil Radiator & Intercooler
@@ -937,7 +1129,17 @@ export const Engine3DView: React.FC<Engine3DViewProps> = ({
         }
       }
 
-      // D. Pulse Sensor Rings
+      // D. Pulse Sensor Rings & Hotspot Warning Halo
+      const halo = engineRootRef.current?.getObjectByName('cyl2HotspotHalo') as THREE.Mesh;
+      if (halo) {
+        const isHot = curFault === 'INJECTOR_DEGRADATION' || (curTel?.chtCylinders && curTel.chtCylinders[1] > 170);
+        halo.visible = !!isHot;
+        if (isHot) {
+          const s = 1.0 + Math.sin(Date.now() * 0.008) * 0.18;
+          halo.scale.set(s, s, s);
+        }
+      }
+
       scene.traverse((obj) => {
         if (obj.name === 'sensorRing') {
           const s = 1.0 + Math.sin(Date.now() * 0.006) * 0.15;

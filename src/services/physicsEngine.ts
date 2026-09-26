@@ -225,6 +225,7 @@ export function simulateAeroPistonTelemetry(
     manifoldPressure: finalMap,
     busVoltage: Number(busVoltage.toFixed(2)),
     powerHp,
+    torqueNm: Math.round(((powerHp * 745.7) / (Math.max(1, (2 * Math.PI * finalRpm) / 60)))) || 125,
     fuelRemainingKg: currentFuel,
     chtCylinders: [cyl1Cht, cyl2Cht, cyl3Cht, cyl4Cht],
     egtCylinders: [cyl1Egt, cyl2Egt, cyl3Egt, cyl4Egt],

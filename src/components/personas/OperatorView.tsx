@@ -75,6 +75,8 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
   theme,
   onInjectFault,
 }) => {
+  const isLight = theme === 'light';
+
   // Collapsible Alert Banner state
   const [isAlertsCollapsed, setIsAlertsCollapsed] = useState(false);
 
@@ -254,19 +256,29 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
   ];
 
   return (
-    <div className="w-full flex flex-col space-y-3 font-sans select-none text-slate-100 animate-fadeIn max-w-[1920px] mx-auto">
+    <div className={`w-full flex flex-col space-y-3 font-sans select-none animate-fadeIn max-w-[1920px] mx-auto ${
+      isLight ? 'text-slate-800' : 'text-slate-100'
+    }`}>
       {/* ========================================================================= */}
       {/* 1. TOP ROW: CRITICAL STATUS BAR (Full-width, high-contrast, zero-scroll)  */}
       {/* ========================================================================= */}
-      <section className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3 shadow-lg flex flex-wrap items-center justify-between gap-3">
+      <section className={`border rounded-lg p-3 flex flex-wrap items-center justify-between gap-3 ${
+        isLight ? 'bg-white border-slate-200 shadow-xs text-slate-800' : 'bg-[#0a0e17] border-[#16273f] shadow-lg text-slate-100'
+      }`}>
         {/* Left: LARGE ENGINE STATUS INDICATOR */}
         <div className="flex items-center space-x-3">
           <div
             className={`px-3 py-1.5 rounded-md font-chakra font-black tracking-widest text-xs sm:text-sm uppercase flex items-center space-x-2 border transition-all ${
               engineStatus === 'CRITICAL'
-                ? 'bg-rose-950/80 border-rose-500 text-rose-300 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]'
+                ? isLight
+                  ? 'bg-rose-50 border-rose-400 text-rose-700 animate-pulse'
+                  : 'bg-rose-950/80 border-rose-500 text-rose-300 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]'
                 : engineStatus === 'DEGRADED'
-                ? 'bg-amber-950/80 border-amber-500 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                ? isLight
+                  ? 'bg-amber-50 border-amber-400 text-amber-700'
+                  : 'bg-amber-950/80 border-amber-500 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                : isLight
+                ? 'bg-emerald-50 border-emerald-400 text-emerald-700'
                 : 'bg-emerald-950/80 border-emerald-500 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
             }`}
           >
@@ -275,39 +287,41 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                 engineStatus === 'CRITICAL'
                   ? 'bg-rose-500 animate-ping'
                   : engineStatus === 'DEGRADED'
-                  ? 'bg-amber-400'
-                  : 'bg-emerald-400'
+                  ? 'bg-amber-500'
+                  : 'bg-emerald-500'
               }`}
             />
             <span>ENGINE: {engineStatus}</span>
           </div>
 
           {/* Overall Aircraft Go/No-Go Recommendation */}
-          <div className="border-l border-slate-700/60 pl-3">
+          <div className={`border-l pl-3 ${isLight ? 'border-slate-200' : 'border-slate-700/60'}`}>
             <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-chakra text-slate-400 uppercase tracking-wider">
+              <span className={`text-[10px] font-chakra uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                 AIRCRAFT RECOMMENDATION:
               </span>
               <span
                 className={`font-chakra font-extrabold text-xs tracking-wider uppercase ${
                   goNoGo.color === 'rose'
-                    ? 'text-rose-400'
+                    ? isLight ? 'text-rose-600' : 'text-rose-400'
                     : goNoGo.color === 'amber'
-                    ? 'text-amber-400'
-                    : 'text-emerald-400'
+                    ? isLight ? 'text-amber-600' : 'text-amber-400'
+                    : isLight ? 'text-emerald-600' : 'text-emerald-400'
                 }`}
               >
                 {goNoGo.label}
               </span>
             </div>
-            <p className="text-[11px] font-mono text-slate-400 mt-0.5 line-clamp-1">
+            <p className={`text-[11px] font-mono mt-0.5 line-clamp-1 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
               {goNoGo.detail}
             </p>
           </div>
         </div>
 
         {/* Center: FLIGHT PHASE INDICATOR */}
-        <div className="hidden md:flex items-center bg-[#070b13] border border-[#142338] p-1 rounded-md">
+        <div className={`hidden md:flex items-center p-1 rounded-md border ${
+          isLight ? 'bg-slate-100 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+        }`}>
           {flightPhases.map((phase) => {
             const isActive = currentPhase === phase.id;
 
@@ -317,7 +331,11 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                 onClick={() => onSelectPhase(phase.id)}
                 className={`px-2.5 py-1 rounded text-[11px] font-chakra font-bold tracking-wide transition-all ${
                   isActive
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+                    ? isLight
+                      ? 'bg-white text-cyan-700 border border-slate-300 shadow-xs'
+                      : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+                    : isLight
+                    ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 border border-transparent'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-[#0d1624] border border-transparent'
                 }`}
               >
@@ -328,20 +346,20 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
         </div>
 
         {/* Right: MISSION TIMER & ESTIMATED TIME REMAINING */}
-        <div className="flex items-center space-x-4 font-mono text-xs text-slate-300">
+        <div className={`flex items-center space-x-4 font-mono text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
           <div className="text-right">
-            <div className="text-[9px] font-chakra text-slate-400 uppercase tracking-wider">
+            <div className={`text-[9px] font-chakra uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               MISSION TIMER
             </div>
-            <div className="text-cyan-400 font-bold text-sm tracking-wider">
+            <div className={`font-bold text-sm tracking-wider ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>
               01:42:15
             </div>
           </div>
-          <div className="border-l border-slate-700/60 pl-3 text-right">
-            <div className="text-[9px] font-chakra text-slate-400 uppercase tracking-wider">
+          <div className={`border-l pl-3 text-right ${isLight ? 'border-slate-200' : 'border-slate-700/60'}`}>
+            <div className={`text-[9px] font-chakra uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               EST. TIME REMAINING
             </div>
-            <div className="text-emerald-400 font-bold text-sm tracking-wider">
+            <div className={`font-bold text-sm tracking-wider ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
               03:17:45 (FUEL)
             </div>
           </div>
@@ -353,26 +371,32 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
       {/* ========================================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
         {/* THREE LARGE CIRCULAR GAUGES (Engine Health %, RUL Hours, Current RPM) */}
-        <div className="lg:col-span-8 bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
+        <div className={`lg:col-span-8 border rounded-lg p-3.5 flex flex-col justify-between ${
+          isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+        }`}>
+          <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
             <div className="flex items-center space-x-2">
-              <Gauge className="w-4 h-4 text-cyan-400" />
-              <h3 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+              <Gauge className={`w-4 h-4 ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
+              <h3 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
                 PRIMARY PROPULSION INSTRUMENTATION [HUD GAUGES]
               </h3>
             </div>
-            <span className="text-[10px] font-tech text-cyan-400 px-2 py-0.5 rounded bg-cyan-950/40 border border-cyan-800/40">
+            <span className={`text-[10px] font-tech px-2 py-0.5 rounded border ${
+              isLight ? 'text-cyan-700 bg-cyan-50 border-cyan-200' : 'text-cyan-400 bg-cyan-950/40 border-cyan-800/40'
+            }`}>
               1000ms TELEMETRY UPDATE
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-1">
             {/* GAUGE 1: ENGINE HEALTH % (0-100) WITH COLOR ZONES */}
-            <div className="p-3 rounded-lg bg-[#070b13] border border-[#142338] flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="text-[11px] font-chakra font-bold text-slate-300 uppercase">
+            <div className={`p-3 rounded-lg border flex flex-col items-center justify-center relative overflow-hidden ${
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+            }`}>
+              <div className={`text-[11px] font-chakra font-bold uppercase ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                 Engine Health
               </div>
-              <div className="text-[9px] font-mono text-slate-400">0 - 100 Index</div>
+              <div className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>0 - 100 Index</div>
 
               {/* Circular Arc Representation */}
               <div className="relative w-32 h-32 flex items-center justify-center my-1.5">
@@ -445,11 +469,13 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
             </div>
 
             {/* GAUGE 2: RUL IN FLIGHT HOURS */}
-            <div className="p-3 rounded-lg bg-[#070b13] border border-[#142338] flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="text-[11px] font-chakra font-bold text-slate-300 uppercase">
+            <div className={`p-3 rounded-lg border flex flex-col items-center justify-center relative overflow-hidden ${
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+            }`}>
+              <div className={`text-[11px] font-chakra font-bold uppercase ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                 Remaining Useful Life
               </div>
-              <div className="text-[9px] font-mono text-slate-400">Prognostic Horizon</div>
+              <div className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Prognostic Horizon</div>
 
               <div className="relative w-32 h-32 flex items-center justify-center my-1.5">
                 <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
@@ -458,7 +484,7 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                     cy="50"
                     r="40"
                     fill="transparent"
-                    stroke="#142338"
+                    stroke={isLight ? '#e2e8f0' : '#142338'}
                     strokeWidth="8"
                   />
                   <circle
@@ -468,7 +494,7 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                     fill="transparent"
                     stroke="#06b6d4"
                     strokeWidth="8"
-                    strokeDasharray="251.2"
+                    strokeDasharray={251.2}
                     strokeDashoffset={251.2 - (251.2 * Math.min(100, Math.max(10, (184 / 250) * 100))) / 100}
                     strokeLinecap="round"
                     className="transition-all duration-500 ease-out"
@@ -476,27 +502,31 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                 </svg>
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className="font-tech font-extrabold text-2xl text-cyan-400">
+                  <span className={`font-tech font-extrabold text-2xl ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`}>
                     184
                   </span>
-                  <span className="text-[9px] font-chakra text-slate-300 uppercase">
+                  <span className={`text-[9px] font-chakra uppercase ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
                     HOURS RUL
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between w-full text-[9px] font-mono text-slate-400 px-1 border-t border-[#142338] pt-1">
+              <div className={`flex items-center justify-between w-full text-[9px] font-mono px-1 border-t pt-1 ${
+                isLight ? 'border-slate-200 text-slate-500' : 'border-[#142338] text-slate-400'
+              }`}>
                 <span>Next Svc: 45h</span>
-                <span className="text-cyan-400">95% CI</span>
+                <span className={isLight ? 'text-cyan-700 font-bold' : 'text-cyan-400'}>95% CI</span>
               </div>
             </div>
 
             {/* GAUGE 3: CURRENT RPM VS MAX SAFE RPM (3500 max) */}
-            <div className="p-3 rounded-lg bg-[#070b13] border border-[#142338] flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="text-[11px] font-chakra font-bold text-slate-300 uppercase">
+            <div className={`p-3 rounded-lg border flex flex-col items-center justify-center relative overflow-hidden ${
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+            }`}>
+              <div className={`text-[11px] font-chakra font-bold uppercase ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                 Crankshaft Speed
               </div>
-              <div className="text-[9px] font-mono text-slate-400">Max Safe: 3500 RPM</div>
+              <div className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Max Safe: 3500 RPM</div>
 
               <div className="relative w-32 h-32 flex items-center justify-center my-1.5">
                 <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
@@ -505,7 +535,7 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                     cy="50"
                     r="40"
                     fill="transparent"
-                    stroke="#142338"
+                    stroke={isLight ? '#e2e8f0' : '#142338'}
                     strokeWidth="8"
                   />
                   {/* Redline Zone 3300-3500 */}
@@ -516,8 +546,8 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                     fill="transparent"
                     stroke="#ef4444"
                     strokeWidth="8"
-                    strokeDasharray="251.2"
-                    strokeDashoffset="251.2 - 20"
+                    strokeDasharray={251.2}
+                    strokeDashoffset={251.2 - 20}
                     opacity="0.4"
                   />
                   <circle
@@ -533,7 +563,7 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                         : '#06b6d4'
                     }
                     strokeWidth="8"
-                    strokeDasharray="251.2"
+                    strokeDasharray={251.2}
                     strokeDashoffset={251.2 - (251.2 * Math.min(100, (currentRpm / maxSafeRpm) * 100)) / 100}
                     strokeLinecap="round"
                     className="transition-all duration-500 ease-out"
@@ -543,33 +573,39 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                   <span
                     className={`font-tech font-extrabold text-2xl ${
-                      currentRpm > 3300 ? 'text-rose-400' : 'text-cyan-400'
+                      currentRpm > 3300
+                        ? isLight ? 'text-rose-600' : 'text-rose-400'
+                        : isLight ? 'text-cyan-700' : 'text-cyan-400'
                     }`}
                   >
                     {currentRpm}
                   </span>
-                  <span className="text-[9px] font-chakra text-slate-300 uppercase">
+                  <span className={`text-[9px] font-chakra uppercase ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
                     RPM
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between w-full text-[9px] font-mono text-slate-400 px-1 border-t border-[#142338] pt-1">
+              <div className={`flex items-center justify-between w-full text-[9px] font-mono px-1 border-t pt-1 ${
+                isLight ? 'border-slate-200 text-slate-500' : 'border-[#142338] text-slate-400'
+              }`}>
                 <span>Idle: 800</span>
                 <span>Cruise: 2450</span>
-                <span className="text-rose-400">Max: 3500</span>
+                <span className="text-rose-500 font-bold">Max: 3500</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* DIGITAL READOUTS: OIL TEMP, COOLANT/CHT, EGT, VIBRATION */}
-        <div className="lg:col-span-4 bg-[#0a0e17] border border-[#16273f] rounded-lg p-3.5 shadow-md flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#142338]">
-            <h4 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+        <div className={`lg:col-span-4 border rounded-lg p-3.5 flex flex-col justify-between ${
+          isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+        }`}>
+          <div className={`flex items-center justify-between pb-2 mb-2 border-b ${isLight ? 'border-slate-200' : 'border-[#142338]'}`}>
+            <h4 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
               THERMAL & DYNAMIC DIGITAL READOUTS
             </h4>
-            <span className="text-[10px] font-mono text-slate-400">SAFE LIMITS</span>
+            <span className={`text-[10px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>SAFE LIMITS</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5 flex-1">
@@ -577,7 +613,11 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
             <div
               className={`p-2.5 rounded-lg border flex flex-col justify-between transition-all ${
                 isOilTempUnsafe
-                  ? 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  ? isLight
+                    ? 'bg-rose-50 border-rose-300 text-rose-800 animate-pulse'
+                    : 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  : isLight
+                  ? 'bg-slate-50 border-slate-200 text-slate-700'
                   : 'bg-[#070b13] border-[#142338] text-slate-300'
               }`}
             >
@@ -610,18 +650,22 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
             <div
               className={`p-2.5 rounded-lg border flex flex-col justify-between transition-all ${
                 isCoolantTempUnsafe
-                  ? 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  ? isLight
+                    ? 'bg-rose-50 border-rose-300 text-rose-800 animate-pulse'
+                    : 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  : isLight
+                  ? 'bg-slate-50 border-slate-200 text-slate-700'
                   : 'bg-[#070b13] border-[#142338] text-slate-300'
               }`}
             >
               <div className="flex items-center justify-between text-[11px] font-chakra">
                 <span className="font-bold flex items-center space-x-1">
-                  <Flame className="w-3.5 h-3.5 text-cyan-400" />
+                  <Flame className="w-3.5 h-3.5 text-cyan-500" />
                   <span>COOLANT / CHT</span>
                 </span>
                 <span
                   className={`text-[9px] font-mono px-1 rounded ${
-                    isCoolantTempUnsafe ? 'bg-rose-500 text-white' : 'bg-[#101e33] text-slate-400'
+                    isCoolantTempUnsafe ? 'bg-rose-500 text-white' : isLight ? 'bg-slate-200 text-slate-700' : 'bg-[#101e33] text-slate-400'
                   }`}
                 >
                   {isCoolantTempUnsafe ? 'UNSAFE' : 'SAFE'}
@@ -630,31 +674,35 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
               <div className="my-1">
                 <div
                   className={`text-2xl font-tech font-extrabold ${
-                    isCoolantTempUnsafe ? 'text-rose-400' : 'text-slate-100'
+                    isCoolantTempUnsafe ? 'text-rose-600' : isLight ? 'text-slate-900' : 'text-slate-100'
                   }`}
                 >
                   {coolantTemp.toFixed(1)}°C
                 </div>
               </div>
-              <div className="text-[9px] font-mono text-slate-400">Range: 150 - 220°C</div>
+              <div className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Range: 150 - 220°C</div>
             </div>
 
             {/* 3. Exhaust Gas Temp EGT (Safe: 600 - 800°C) */}
             <div
               className={`p-2.5 rounded-lg border flex flex-col justify-between transition-all ${
                 isEgtUnsafe
-                  ? 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  ? isLight
+                    ? 'bg-rose-50 border-rose-300 text-rose-800 animate-pulse'
+                    : 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  : isLight
+                  ? 'bg-slate-50 border-slate-200 text-slate-700'
                   : 'bg-[#070b13] border-[#142338] text-slate-300'
               }`}
             >
               <div className="flex items-center justify-between text-[11px] font-chakra">
                 <span className="font-bold flex items-center space-x-1">
-                  <Activity className="w-3.5 h-3.5 text-amber-400" />
+                  <Activity className="w-3.5 h-3.5 text-amber-500" />
                   <span>COLLECTOR EGT</span>
                 </span>
                 <span
                   className={`text-[9px] font-mono px-1 rounded ${
-                    isEgtUnsafe ? 'bg-rose-500 text-white' : 'bg-[#101e33] text-slate-400'
+                    isEgtUnsafe ? 'bg-rose-500 text-white' : isLight ? 'bg-slate-200 text-slate-700' : 'bg-[#101e33] text-slate-400'
                   }`}
                 >
                   {isEgtUnsafe ? 'UNSAFE' : 'SAFE'}
@@ -663,31 +711,35 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
               <div className="my-1">
                 <div
                   className={`text-2xl font-tech font-extrabold ${
-                    isEgtUnsafe ? 'text-rose-400' : 'text-slate-100'
+                    isEgtUnsafe ? 'text-rose-600' : isLight ? 'text-slate-900' : 'text-slate-100'
                   }`}
                 >
                   {Math.round(egt)}°C
                 </div>
               </div>
-              <div className="text-[9px] font-mono text-slate-400">Range: 600 - 800°C</div>
+              <div className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Range: 600 - 800°C</div>
             </div>
 
             {/* 4. Engine Vibration (Safe: 0.1 - 0.5 g) */}
             <div
               className={`p-2.5 rounded-lg border flex flex-col justify-between transition-all ${
                 isVibrationUnsafe
-                  ? 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  ? isLight
+                    ? 'bg-rose-50 border-rose-300 text-rose-800 animate-pulse'
+                    : 'bg-rose-950/40 border-rose-500/80 text-rose-200 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                  : isLight
+                  ? 'bg-slate-50 border-slate-200 text-slate-700'
                   : 'bg-[#070b13] border-[#142338] text-slate-300'
               }`}
             >
               <div className="flex items-center justify-between text-[11px] font-chakra">
                 <span className="font-bold flex items-center space-x-1">
-                  <Activity className="w-3.5 h-3.5 text-teal-400" />
+                  <Activity className="w-3.5 h-3.5 text-teal-500" />
                   <span>VIBRATION RMS</span>
                 </span>
                 <span
                   className={`text-[9px] font-mono px-1 rounded ${
-                    isVibrationUnsafe ? 'bg-rose-500 text-white' : 'bg-[#101e33] text-slate-400'
+                    isVibrationUnsafe ? 'bg-rose-500 text-white' : isLight ? 'bg-slate-200 text-slate-700' : 'bg-[#101e33] text-slate-400'
                   }`}
                 >
                   {isVibrationUnsafe ? 'UNSAFE' : 'SAFE'}
@@ -696,13 +748,13 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
               <div className="my-1">
                 <div
                   className={`text-2xl font-tech font-extrabold ${
-                    isVibrationUnsafe ? 'text-rose-400' : 'text-slate-100'
+                    isVibrationUnsafe ? 'text-rose-600' : isLight ? 'text-slate-900' : 'text-slate-100'
                   }`}
                 >
                   {vibration.toFixed(2)} g
                 </div>
               </div>
-              <div className="text-[9px] font-mono text-slate-400">Range: 0.1 - 0.5 g</div>
+              <div className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Range: 0.1 - 0.5 g</div>
             </div>
           </div>
         </div>
@@ -711,11 +763,15 @@ export const OperatorView: React.FC<OperatorViewProps> = ({
       {/* ========================================================================= */}
       {/* 3. ALERT BANNER (STICKY, COLLAPSIBLE REAL-TIME ALERT FEED)                */}
       {/* ========================================================================= */}
-      <section className="bg-[#0a0e17] border border-[#16273f] rounded-lg shadow-md overflow-hidden">
-        <div className="px-3.5 py-2 bg-[#070b13] border-b border-[#142338] flex items-center justify-between">
+      <section className={`border rounded-lg shadow-xs overflow-hidden ${
+        isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-md'
+      }`}>
+        <div className={`px-3.5 py-2 border-b flex items-center justify-between ${
+          isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#070b13] border-[#142338]'
+        }`}>
           <div className="flex items-center space-x-2.5">
-            <ShieldAlert className="w-4 h-4 text-cyan-400" />
-            <h4 className="text-xs font-chakra font-bold tracking-wider text-slate-200 uppercase">
+            <ShieldAlert className={`w-4 h-4 ${isLight ? 'text-cyan-600' : 'text-cyan-400'}`} />
+            <h4 className={`text-xs font-chakra font-bold tracking-wider uppercase ${isLight ? 'text-slate-900' : 'text-slate-200'}`}>
               REAL-TIME MISSION ALERT FEED ({operatorAlerts.filter((a) => !a.acknowledged).length} ACTIVE)
             </h4>
             <span className="text-[10px] font-tech text-cyan-400 px-1.5 py-0.5 rounded bg-cyan-950/40 border border-cyan-800/30">

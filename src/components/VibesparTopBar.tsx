@@ -51,34 +51,40 @@ export const VibesparTopBar: React.FC<VibesparTopBarProps> = ({
 
   const roles: { id: UserRole; label: string; sub: string; icon: React.ReactNode }[] = [
     {
-      id: 'OPERATOR',
-      label: 'UAV OPERATOR',
-      sub: 'Mission Control HUD',
+      id: 'OVERVIEW',
+      label: 'Overview',
+      sub: 'Aero Piston Digital Twin',
       icon: <Plane className="w-3.5 h-3.5" />,
     },
     {
+      id: 'OPERATOR',
+      label: '3D Engine',
+      sub: 'Kinematics & Cutaway',
+      icon: <Eye className="w-3.5 h-3.5" />,
+    },
+    {
       id: 'ENGINEER',
-      label: 'PROPULSION ENG',
-      sub: 'Physics & Thermodynamics',
+      label: 'Telemetry',
+      sub: 'Thermodynamics & Residuals',
       icon: <Cpu className="w-3.5 h-3.5" />,
     },
     {
+      id: 'EDGE_AI',
+      label: 'Diagnostics',
+      sub: 'AI & SHAP Root-Cause',
+      icon: <ShieldCheck className="w-3.5 h-3.5" />,
+    },
+    {
       id: 'MAINTENANCE',
-      label: 'MAINTENANCE',
-      sub: 'Prognostics & Work Orders',
+      label: 'RUL',
+      sub: 'Prognostics & Timeline',
       icon: <Wrench className="w-3.5 h-3.5" />,
     },
     {
       id: 'REPORTS',
-      label: 'MISSION REPORTS',
+      label: 'Reports',
       sub: 'Sortie Logs & Analytics',
       icon: <FileText className="w-3.5 h-3.5" />,
-    },
-    {
-      id: 'EDGE_AI',
-      label: 'EDGE & SECURITY',
-      sub: 'Onboard AI & Cyber Shield',
-      icon: <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />,
     },
   ];
 
@@ -87,58 +93,86 @@ export const VibesparTopBar: React.FC<VibesparTopBarProps> = ({
       id="vibespar-topbar"
       className={`w-full px-3 sm:px-5 py-2 border-b transition-colors flex flex-wrap items-center justify-between gap-3 ${
         isLight
-          ? 'bg-white border-slate-200 text-slate-800'
+          ? 'bg-white border-slate-200 text-slate-800 shadow-xs'
           : 'bg-[#060c18] border-[#14233a] text-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
       }`}
     >
-      {/* Left side: Brand + Identifiers */}
-      <div className="flex items-center space-x-3 sm:space-x-5">
-        <div className="flex items-center space-x-2">
-          <span className="font-chakra font-extrabold text-xl sm:text-2xl tracking-wider text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">
-            VIBESPAR
-          </span>
-          <span className="text-[10px] font-tech text-cyan-500/70 hidden md:inline px-1 py-0.5 rounded bg-cyan-950/30 border border-cyan-800/40">
-            DIGITAL TWIN
-          </span>
+      {/* Left side: Brand + UAV Engine Digital Twin + LIVE Indicator (Exact to image.png) */}
+      <div className="flex items-center space-x-3 sm:space-x-4">
+        <div className="flex items-center space-x-2.5">
+          {/* Cyan Wings Emblem */}
+          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400">
+            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m2 9 8 3-8 3" />
+              <path d="m22 9-8 3 8 3" />
+              <path d="M10 12h4" />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
+              <span className="font-chakra font-extrabold text-xl tracking-wider text-cyan-600 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">
+                VIBESPAR
+              </span>
+            </div>
+            <span className="text-[10px] font-chakra font-semibold text-slate-500 dark:text-slate-400 -mt-1 hidden sm:inline">
+              UAV Engine Digital Twin
+            </span>
+          </div>
         </div>
 
-        {/* Identifiers */}
-        <div className="hidden lg:flex items-center space-x-2 text-xs font-chakra font-semibold tracking-wider text-slate-300">
-          <span className="px-1.5 py-0.5 rounded bg-[#0b1626] border border-[#1a2d48] text-slate-300">
-            {uavId}
+        {/* Live Indicator Badge (Green pulsing dot) */}
+        <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/60">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span className="text-slate-600">•</span>
-          <span className="text-slate-300">{engineId}</span>
-          <span className="text-slate-600">•</span>
-          <span className="text-slate-400 font-mono text-[11px]">{missionId}</span>
+          <span className="text-emerald-700 dark:text-emerald-400 font-chakra font-bold tracking-wider text-[11px]">
+            LIVE
+          </span>
         </div>
       </div>
 
-      {/* Middle: ROLE SELECTOR (Operator / Propulsion Engineer / Maintenance) */}
-      <div className="flex items-center bg-[#091322] border border-[#182c48] p-1 rounded-md shadow-inner">
+      {/* Middle: Horizontal Navigation Tabs (Overview, 3D Engine, Telemetry, Diagnostics, RUL, Reports) */}
+      <nav className={`flex items-center p-1 rounded-lg border shadow-inner ${
+        isLight ? 'bg-slate-100/90 border-slate-200' : 'bg-[#091322] border-[#182c48]'
+      }`}>
         {roles.map((r) => {
           const isActive = currentRole === r.id;
           return (
             <button
               key={r.id}
               onClick={() => onSelectRole(r.id)}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded transition-all text-xs font-chakra font-bold tracking-wide ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md transition-all text-xs font-chakra font-bold tracking-wide ${
                 isActive
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+                  ? isLight
+                    ? 'bg-white text-cyan-700 border border-slate-200 shadow-xs'
+                    : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60 shadow-[0_0_12px_rgba(6,182,212,0.3)]'
+                  : isLight
+                  ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 border border-transparent'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-[#101e33] border border-transparent'
               }`}
-              title={`Switch persona to ${r.label} (${r.sub})`}
+              title={`${r.label} — ${r.sub}`}
             >
-              <span className={isActive ? 'text-cyan-400' : 'text-slate-400'}>{r.icon}</span>
-              <span className="hidden sm:inline">{r.label}</span>
-              <span className="sm:hidden">{r.label.split(' ')[0]}</span>
+              <span className={isActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-400'}>{r.icon}</span>
+              <span>{r.label}</span>
             </button>
           );
         })}
-      </div>
+      </nav>
 
-      {/* Right side: 3D Toggle, Python Dash Source, Live Status, UTC Clock, Theme Toggle */}
+      {/* Right side: MALE UAV | Aero Piston Engine + Silhouette + Controls */}
       <div className="flex items-center space-x-2 sm:space-x-3 text-xs font-chakra">
+        {/* MALE UAV | Aero Piston Engine with Aircraft Silhouette (Matching image.png) */}
+        <div className="hidden xl:flex items-center space-x-2 text-xs font-chakra text-slate-500 dark:text-slate-400">
+          <span className="font-semibold text-slate-700 dark:text-slate-300">MALE UAV</span>
+          <span>|</span>
+          <span className="font-medium text-slate-600 dark:text-slate-400">Aero Piston Engine</span>
+          {/* UAV Silhouette Icon */}
+          <svg className="w-6 h-6 text-slate-400 dark:text-slate-500 ml-1" viewBox="0 0 48 24" fill="currentColor">
+            <path d="M24 8 L32 10 L44 11 L46 12 L32 13 L28 16 L24 22 L22 22 L24 16 L16 16 L12 20 L10 20 L12 14 L4 13 L2 12 L4 11 L16 10 L22 8 Z" opacity="0.8" />
+          </svg>
+        </div>
+
         {/* Toggle 3D Engine View */}
         <button
           onClick={onToggle3DEngine}

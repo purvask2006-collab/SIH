@@ -98,6 +98,8 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
   theme,
   onOpenReportsModule,
 }) => {
+  const isLight = theme === 'light';
+
   // Navigation between Autonomous Maintenance Advisory System & Depot Kanban Logbook
   const [activeSubTab, setActiveSubTab] = useState<'AUTONOMOUS_ADVISORY' | 'KANBAN_LOGBOOK'>('AUTONOMOUS_ADVISORY');
 
@@ -428,25 +430,35 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col space-y-3.5 font-sans select-none text-slate-100 animate-fadeIn max-w-[1920px] mx-auto">
+    <div className={`w-full flex flex-col space-y-3.5 font-sans select-none animate-fadeIn max-w-[1920px] mx-auto ${
+      isLight ? 'text-slate-800' : 'text-slate-100'
+    }`}>
       {/* ========================================================================= */}
       {/* TOP SUMMARY STRIP: DIGITAL MAINTENANCE LOGBOOK & REPORT LAUNCHER          */}
       {/* ========================================================================= */}
-      <section className="bg-[#0a0e17] border border-[#16273f] rounded-lg p-3 shadow-lg flex flex-wrap items-center justify-between gap-3">
+      <section className={`border rounded-lg p-3 flex flex-wrap items-center justify-between gap-3 ${
+        isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-[#0a0e17] border-[#16273f] text-slate-100 shadow-lg'
+      }`}>
         <div className="flex items-center space-x-3">
-          <div className="p-2 rounded-md bg-amber-950/60 border border-amber-500/50 text-amber-400">
+          <div className={`p-2 rounded-md border ${
+            isLight ? 'bg-amber-50 border-amber-300 text-amber-700' : 'bg-amber-950/60 border-amber-500/50 text-amber-400'
+          }`}>
             <Wrench className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-chakra font-bold text-sm tracking-wider text-slate-100 uppercase">
+              <span className={`font-chakra font-bold text-sm tracking-wider uppercase ${
+                isLight ? 'text-slate-900' : 'text-slate-100'
+              }`}>
                 VIBESPAR DIGITAL MAINTENANCE LOGBOOK & ADVISORY SYSTEM
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-tech font-bold uppercase bg-cyan-950 border border-cyan-500/60 text-cyan-300">
+              <span className={`px-2 py-0.5 rounded text-[10px] font-tech font-bold uppercase border ${
+                isLight ? 'bg-cyan-50 border-cyan-300 text-cyan-800' : 'bg-cyan-950 border border-cyan-500/60 text-cyan-300'
+              }`}>
                 DRDO IETM LEVEL 4 AUDITABLE
               </span>
             </div>
-            <p className="text-xs font-mono text-slate-400 mt-0.5">
+            <p className={`text-xs font-mono mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               Automated Kanban Task Board • 50h Component Wear Timeline • RUL & TBO Optimizer
             </p>
           </div>
@@ -456,19 +468,27 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
         <div className="flex items-center space-x-2.5">
           <button
             onClick={() => setIsReportModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-md bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/80 text-cyan-300 font-chakra font-bold text-xs tracking-wider flex items-center space-x-2 shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all"
+            className={`px-3.5 py-1.5 rounded-md border font-chakra font-bold text-xs tracking-wider flex items-center space-x-2 transition-all ${
+              isLight
+                ? 'bg-cyan-50 hover:bg-cyan-100 border-cyan-300 text-cyan-800 shadow-xs'
+                : 'bg-cyan-950/80 hover:bg-cyan-900 border-cyan-500/80 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)]'
+            }`}
             title="Open Mission-027 single sortie maintenance health report"
           >
-            <FileText className="w-4 h-4 text-cyan-400" />
+            <FileText className={`w-4 h-4 ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`} />
             <span>GENERATE MISSION HEALTH REPORT</span>
           </button>
           {onOpenReportsModule && (
             <button
               onClick={onOpenReportsModule}
-              className="px-3.5 py-1.5 rounded-md bg-[#0e1c31] hover:bg-[#162f54] border border-[#214376] text-slate-200 font-chakra font-bold text-xs tracking-wider flex items-center space-x-2 transition-all shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+              className={`px-3.5 py-1.5 rounded-md border font-chakra font-bold text-xs tracking-wider flex items-center space-x-2 transition-all ${
+                isLight
+                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700 shadow-xs'
+                  : 'bg-[#0e1c31] hover:bg-[#162f54] border-[#214376] text-slate-200 shadow-[0_0_10px_rgba(0,0,0,0.5)]'
+              }`}
               title="Open the comprehensive multi-mission health reports database"
             >
-              <FileCheck className="w-4 h-4 text-emerald-400" />
+              <FileCheck className={`w-4 h-4 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`} />
               <span>ALL MISSIONS ARCHIVE</span>
             </button>
           )}
@@ -478,19 +498,27 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
       {/* ========================================================================= */}
       {/* SUB-NAVIGATION: AUTONOMOUS AI ADVISORY SYSTEM vs DEPOT KANBAN LOGBOOK     */}
       {/* ========================================================================= */}
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-[#080d19] border border-[#16253e] p-1.5 rounded-lg shadow-md">
+      <div className={`flex flex-wrap items-center justify-between gap-2 border p-1.5 rounded-lg ${
+        isLight ? 'bg-white border-slate-200 shadow-xs' : 'bg-[#080d19] border-[#16253e] shadow-md'
+      }`}>
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             onClick={() => setActiveSubTab('AUTONOMOUS_ADVISORY')}
             className={`px-3 py-1.5 rounded text-xs font-chakra font-bold tracking-wider uppercase transition-all flex items-center space-x-2 border ${
               activeSubTab === 'AUTONOMOUS_ADVISORY'
-                ? 'bg-cyan-950 text-cyan-300 border-cyan-400 shadow-[0_0_14px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400/60'
+                ? isLight
+                  ? 'bg-cyan-50 text-cyan-800 border-cyan-400 shadow-xs'
+                  : 'bg-cyan-950 text-cyan-300 border-cyan-400 shadow-[0_0_14px_rgba(6,182,212,0.35)] ring-1 ring-cyan-400/60'
+                : isLight
+                ? 'bg-slate-50 text-slate-600 hover:text-slate-900 border-slate-200 hover:bg-slate-100'
                 : 'bg-[#050a14] text-slate-400 hover:text-slate-200 border-[#15233a] hover:bg-[#0c1626]'
             }`}
           >
-            <Bot className="w-4 h-4 text-cyan-400" />
+            <Bot className={`w-4 h-4 ${isLight ? 'text-cyan-700' : 'text-cyan-400'}`} />
             <span>⚡ AUTONOMOUS AI ADVISORY SYSTEM</span>
-            <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-cyan-900/80 text-cyan-200 border border-cyan-600">
+            <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono border ${
+              isLight ? 'bg-cyan-100 text-cyan-800 border-cyan-300' : 'bg-cyan-900/80 text-cyan-200 border-cyan-600'
+            }`}>
               PROACTIVE
             </span>
           </button>
@@ -499,22 +527,30 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
             onClick={() => setActiveSubTab('KANBAN_LOGBOOK')}
             className={`px-3 py-1.5 rounded text-xs font-chakra font-bold tracking-wider uppercase transition-all flex items-center space-x-2 border ${
               activeSubTab === 'KANBAN_LOGBOOK'
-                ? 'bg-amber-950 text-amber-300 border-amber-500 shadow-[0_0_14px_rgba(245,158,11,0.3)] ring-1 ring-amber-500/60'
+                ? isLight
+                  ? 'bg-amber-50 text-amber-800 border-amber-400 shadow-xs'
+                  : 'bg-amber-950 text-amber-300 border-amber-500 shadow-[0_0_14px_rgba(245,158,11,0.3)] ring-1 ring-amber-500/60'
+                : isLight
+                ? 'bg-slate-50 text-slate-600 hover:text-slate-900 border-slate-200 hover:bg-slate-100'
                 : 'bg-[#050a14] text-slate-400 hover:text-slate-200 border-[#15233a] hover:bg-[#0c1626]'
             }`}
           >
-            <ClipboardList className="w-4 h-4 text-amber-400" />
+            <ClipboardList className={`w-4 h-4 ${isLight ? 'text-amber-700' : 'text-amber-400'}`} />
             <span>📋 DEPOT KANBAN & TBO LOGBOOK</span>
-            <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-amber-950/80 text-amber-300 border border-amber-700">
+            <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono border ${
+              isLight ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-amber-950/80 text-amber-300 border-amber-700'
+            }`}>
               {cards.length} TASKS
             </span>
           </button>
         </div>
 
-        <div className="hidden md:flex items-center space-x-3 text-[11px] font-mono text-slate-400 pr-2">
+        <div className={`hidden md:flex items-center space-x-3 text-[11px] font-mono pr-2 ${
+          isLight ? 'text-slate-500' : 'text-slate-400'
+        }`}>
           <span>Weibull-LSTM Hazard Active</span>
           <span>•</span>
-          <span className="text-cyan-400">Rotax 914-F Turbo Twin</span>
+          <span className={isLight ? 'text-cyan-700 font-bold' : 'text-cyan-400'}>Rotax 914-F Turbo Twin</span>
         </div>
       </div>
 
